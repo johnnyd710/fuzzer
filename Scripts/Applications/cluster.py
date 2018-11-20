@@ -10,9 +10,8 @@ fuzzer.py <directory of signals>
 import numpy as np
 import os
 import sys
-
-from tslearn.clustering import TimeSeriesKMeans
-from tslearn.datasets import CachedDatasets
+import csv
+import time
 
 from fastdtw import fastdtw
 from scipy.spatial.distance import euclidean
@@ -27,7 +26,7 @@ def r(x, y):
     return 1 - r # correlation to distance: range 0 to 2
 
 def dtw(x, y):
-    distance, path = fastdtw(x, y, dist=euclidean)
+    distance, path = fastdtw(x, y, dist=1)
     return distance
 
 def get_signals():
@@ -47,14 +46,19 @@ def get_signals():
         list_of_signals.append(np.genfromtxt(filename, delimiter=','))
         n+=1
     
-    l = len(list_of_signals[0])
-    signals = np.zeros([n, l])   #, 1])
+    min_l = 1e10
+    for s in list_of_signals:
+        l = len(s)
+        if l < min_l: min_l = l
+
+    signals = np.zeros([n, min_l])   #, 1])
 
     for i, arr in enumerate(list_of_signals):
-        arr = arr[0:l]
+        print(len(arr))
+        arr = arr[0:min_l]
         signals[i] = arr #.reshape(l,1)
 
-    print(signals)
+    print(len(signals[0]))
     return signals
     
 def plot(Z):
@@ -71,7 +75,7 @@ def plot(Z):
     )
     plt.show()
 
-def print_clusters(timeSeries, Z, k, plot=False):
+def clusters(timeSeries, Z, k, plot=False):
     import matplotlib.pyplot as plt
     import pandas as pd
     # k Number of clusters I'd like to extract
@@ -90,13 +94,24 @@ def print_clusters(timeSeries, Z, k, plot=False):
             timeSeries.T.iloc[:,cluster_indeces].plot()
             plt.show()
 
+    return results
+
 if __name__ == '__main__':
     print("Clustering responses...")
+    start = time.time()
 
     data = get_signals()
     #print(clf(data))
 
     # Do the clustering    
     Z = hac.linkage(data,  method='single', metric=dtw)
-    plot(Z)
-    print_clusters(data, Z, 6, plot=True)
+    print("Time taken:", time.time() - start)
+    #plot(Z)
+    clus = clusters(data, Z, 6, plot=True)
+
+    with open('out.csv', 'w') as fh:
+        writer = csv.writer(fh, delimiter=',')
+        writer.writerow(['id','val'])
+        writer.writerows(enumerate(clus))
+
+    exit()

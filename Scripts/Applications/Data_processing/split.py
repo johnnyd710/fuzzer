@@ -43,15 +43,14 @@ for line in test_file:
             signal_counter += 1
             end_timestamps.append(time)
 
-      if signal_counter >= 100:
+      if signal_counter >= 1000:
             break
 
 test_file.seek(0,0)
 signal_counter = 0
 internal_counter = 0
 num_signals = len(timestamps)
-print(timestamps)
-print(end_timestamps)
+print("No. of signals:", num_signals)
 
 test_file.close()
 
