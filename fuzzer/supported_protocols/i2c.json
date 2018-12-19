@@ -1,0 +1,12 @@
+{
+    "address":
+	{
+        "size":8,
+        "type":"int"
+    },
+    "register":
+    {
+        "size":8,
+        "type":"int"
+    }
+}
