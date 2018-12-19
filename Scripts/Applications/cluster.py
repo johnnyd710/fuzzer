@@ -54,7 +54,6 @@ def get_signals():
     signals = np.zeros([n, min_l])   #, 1])
 
     for i, arr in enumerate(list_of_signals):
-        print(len(arr))
         arr = arr[0:min_l]
         signals[i] = arr #.reshape(l,1)
 
@@ -109,7 +108,9 @@ if __name__ == '__main__':
     #plot(Z)
     clus = clusters(data, Z, 6, plot=True)
 
-    with open('out.csv', 'w') as fh:
+    outname = sys.argv[2]
+
+    with open(outname + '.csv', 'w') as fh:
         writer = csv.writer(fh, delimiter=',')
         writer.writerow(['id','val'])
         writer.writerows(enumerate(clus))
