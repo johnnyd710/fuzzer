@@ -1,0 +1,18 @@
+\begin{thebibliography}{1}
+
+\bibitem{goossens.book}
+Michel Goossens, Frank Mittelbach, and Alexander Samarin.
+\newblock {\em The \LaTeX\ Companion}.
+\newblock Addison-Wesley, Reading, Massachusetts, 1994.
+
+\bibitem{knuth.book}
+Donald Knuth.
+\newblock {\em The \TeX book}.
+\newblock Addison-Wesley, Reading, Massachusetts, 1986.
+
+\bibitem{lamport.book}
+Leslie Lamport.
+\newblock {\em \LaTeX\ --- A Document Preparation System}.
+\newblock Addison-Wesley, Reading, Massachusetts, second edition, 1994.
+
+\end{thebibliography}
