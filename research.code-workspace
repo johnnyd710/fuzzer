@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "Documents/Proposal"
+		},
+		{
+			"path": "tests"
 		}
 	],
 	"settings": {}

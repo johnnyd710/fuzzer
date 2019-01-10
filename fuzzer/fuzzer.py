@@ -1,66 +1,84 @@
-#!/usr/bin/python3.5
-# pylint: disable=no-value-for-parameter
 '''
-created on: Dec. 19th 2018
-author: John DiMatteo
-description: 
-
-smart algorithm to determine the validity of msgs in a specified protocol.
+Data class holds the time series responses as numpy arrays in a dictionary.
+structure:
+data: dict of dicts, each dict indexed by the 'msg'. 
+data['msg']: dict of a bool (membership: VALID/INVALID) 
+and a list of numpy arrays (data: [1.4 1.5 1.6 etc])
 '''
 
+import numpy as np
+import matplotlib.pyplot as plt
 import click
-import random
-#from cluster import cluster
-#from I2C import...
+import os
+import sys
+sys.path.insert(0, './clusterers')
 
-@click.command()
-@click.option('--protocol', '-p', default='i2c', help='protocol representing the format in which to fuzz. currently tested with i2c only.')
-def fuzzer(protocol):
-    # get msg format from json
-    path_to_protocol = './protocols/' + str(protocol) + '.json'
-    try:
-        with open(path_to_protocol) as handle:
-            #protocol_dict = json.loads(handle.read())
+class Fuzzer:
+    def __init__(self, length):
+        '''
+        initialize with 
+        '''
+        self.data = np.zeros(1)
+        self.msg_dict = {}
+        self.length = length
 
-    except FileNotFoundError:
-        click.echo("Incorrect protocol path entered. Please use a supported protocol in supported_protocols. See --help for more info.")
-        exit()
+    def add(self, signal, label):
+        """ for use after sending a message. label is the msg name."""
 
-    # for loop:
+        if np.sum(self.data) == 0:
+            self.data = signal.reshape(1,self.length)
 
-        # initialize msg class
-        # msg = I2C_msg()
-        # cluster = Clusterer()
+        else:
+            self.data = np.concatenate((self.data, signal.reshape(1,self.length)))
 
-        # msg.send()
+        idx = self.data.shape[0]-1 # index where you just placed signal
 
-        # wait()
+        if label in self.msg_dict:
+            click.echo("Signal already loaded for this message "+ label +". Please retry.")
 
-        # response = msg.recieve()
+        else: self.msg_dict[label] = {'membership': 0, 'data': idx}
 
-        # cluster.fit(response)
+    def clean(self):
+        """ get rid of noisy signals, output msgs removed """
+        pass
 
-        # depending on cluster info do  ...
+    def check_for_noise(self):
+        """ stopping condition for first pass. are any signals noise? """
+        return True
 
-    # print expected signal
-    # cluster.expected_signal('group A')
+    def plot_all_signals(self, membership, save = False):
+        idxs = []
 
+        for msg, info in self.msg_dict.items():
+            if info['membership'] == membership:
+                idxs.append(info['data'])
 
+        signals = self.data[idxs]
 
-    msg = {} # initialize msg
-    for section in protocol_dict: # build first msg from random
-        msg[section] = ''
-        for i in range(protocol_dict[section]["size"]):
-            msg[section] += str(random.randint(0,1))
+        avg = np.average(signals, axis=0)
+        std = np.std(signals, axis=0)
+        x = range(self.length)
+    
+        plt.style.use('ggplot') #Change/Remove This If you Want
+        fig, ax = plt.subplots(figsize=(15, 10))
+        ax.plot(x, avg, alpha=0.5, color='red', label=str(membership), linewidth = 1.0)
+        ax.fill_between(x, avg - std, avg + std, color='#888888', alpha=0.4)
+        ax.fill_between(x, avg - 2*std, avg + 2* std, color='#888888', alpha=0.2)
+        ax.legend(loc='best')
+        ax.set_ylabel("Signal units?")
+        ax.set_xlabel("Time")
+        if save: plt.savefig('../tests/figs/' +str(membership) + '.png')
+        plt.show()
 
-    click.echo(msg)
-
-    # ask msg <- in I2C.py
-
-
-    # cluster the msg <- in cluster.py
-    # print result <- in cluster.py
-    pass
-
-if __name__ == "__main__":
-    fuzzer()
+    def plot_signal(self, msg, save = False):
+        """ plot expected signal given a msg """
+        signal = self.data[msg]['data']
+        x = range(signal.shape[0])
+    
+        plt.style.use('ggplot') #Change/Remove This If you Want
+        fig, ax = plt.subplots(figsize=(15, 10))
+        ax.plot(x, signal, alpha=0.5, color='red', label=str(msg), linewidth = 1.0)
+        ax.set_ylabel("Signal units?")
+        ax.set_xlabel("Time")
+        if save: plt.savefig('../tests/figs/' +str(msg)+ '.png')
+        plt.show()
