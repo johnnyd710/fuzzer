@@ -25,6 +25,9 @@
   }{%1
 \end{list}}
 
+\usepackage{graphicx}
+\graphicspath{ {../figs/} }
+
 \begin{document}
 \maketitle
 
@@ -50,7 +53,15 @@ clustering algorithms - k means, dbscan, gmm
 
 other - hmm, autoencoders
 
-\section*{Aim} 
+Useful in many areas.
+
+identify the acceptable input grammar. 
+A novel approach to model learning using machine learning.
+by sending I2C messages and analyzing the power trace with neural networks.
+Uses: black box HIL testing by manufacturers, finding undocumented functionality for security purposes, input grammar for fuzz tests, inputs for polygraph
+
+
+\section*{Problem Statement} 
 %Now state explicitly the hypothesis you aim to
 %test. Make references to the items listed in the Reference section
 %that back up your arguments for why this is a reasonable
@@ -59,41 +70,50 @@ other - hmm, autoencoders
 %particular project.  Moreover, is it likely to have any other
 %applications?
 
-Given no a priori knowledge of an I2C black box system, identify the acceptable input grammar. 
-A novel approach to model learning using machine learning.
-by sending I2C messages and analyzing the power trace with neural networks.
-Uses: black box HIL testing by manufacturers, finding undocumented functionality for security purposes, input grammar for fuzz tests, inputs for polygraph
+\begin{enumerate}
+    \item \textbf{Change Detector}: Given a black box system, determine internal state changes in response to inputs in order to learn the system's behaviour.
+    \item \textbf{Input Generator}: Given inputs and knowledge of previous state changes, what should be the next query to the system?
+\end{enumerate}
 
 \section*{Method}
-In this section you should outline how you intend to go
-about accomplishing the aims you have set in the previous
-section. Try to break your grand aims down into small,
-achievable tasks. Try to estimate how long you will
-spend on each task, and draw up a timetable for each
-sub-task.
 
-\section*{Software and Hardware Requirements}
-Outline what your specific requirements will be with regard
-to software and hardware, but note that any special requests
-might need to be approved by your supervisor and the Head of
-Department.
+\subsection*{System}
 
-Overall, you should aim to produce roughly a two page document
-(and certainly no more than four pages)
-outlining your plan for the year.
+\includegraphics[scale=0.5]{Fuzzer.png}
 
-\begin{thebibliography}{9}
-\bibitem{knuth} D. E. Knuth. {\em The \TeX~book.}\/ Addison-Wesley,
-Reading, Massachusetts, 1984.
-\bibitem{lamport} L. Lamport. {\em \LaTeX~: A Document Preparation
-System}.\/ Addison-Wesley, Reading, Massachusetts, 1986.
-\bibitem{ken} Ken Wessen, Preparing a thesis using \LaTeX~, private
-communication, 1994.
-\bibitem{lamport2} L. Lamport. Document Production: Visual
-or Logical, {\em Notices of the Amer. Maths. Soc.},\/ Vol. 34,
-1987, pp. 621-624.
-\end{thebibliography}
+\subsection*{Change Detector}
+distance based: measure of how much the signal moved
+dtw: define a threshold. larger difference = more confident.
 
+clustering algorithms: do they require us to input no. of states? online learning? confidence?
+options: dbscan, k means
+DBSCAN is good, no states required, identifies noise. BUT we have to recalculate with all data points, every time (BUT only do DTW once, ie. 
+receive batch of responses, cluster, return yes + msg that triggered it, or no or maybe or more than one + msgs.
+
+Bayesian approach: DETERMINE WHICH CLUSTER OR MAKE A NEW ONE. can eliminate noise manually or just accept it.
+for each state, build an expected signal. that way we save out on memory. 
+if the expected signal has an extremely high standard deviation ... it might be time to make a new cluster
+but we need some way of matching up signals (apparently you can align them using cross correlation, or custom change detection ie. significant change)
+compute dtw distance to each expected state signal. (or cluster)
+return (current state) or (new state, msg that triggered it)
+
+parameters: eps, min samples, const * standard deviation of expected signals for each state
+
+
+\subsection*{Input Generator}
+L star algorithm: can't because we don't have an oracle that can give us a counterexample, unless we search and depend on our clustering algorithm?
+randomization
+
+step 1: determine active msgs.
+step 2: try to change the state: send a bunch of messages while modifying one bit at a time depending on protocol (character for URL, bit for NMAP packets).
+step 3: receive response from change detector (yes + msg that triggered it, no, maybe, more than one + msgs)
+
+parameters: protocol specification (json?)
+
+\section*{Additional Modules or Functionality}
+method to convert states and transitions to mealy machine.
+message sender (already implemented for I2C)
+focus will be on I2C since system is already in place.
 
 \end{document}
 
