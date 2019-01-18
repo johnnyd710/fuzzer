@@ -27,6 +27,7 @@
 
 \usepackage{graphicx}
 \graphicspath{ {../figs/} }
+\usepackage{hyperref}
 
 \begin{document}
 \maketitle
@@ -37,7 +38,7 @@
 \item[{\bf Author:}]
 	Johnathan DiMatteo
 \item[{\bf Supervisor:}]
-	Professor Sebastian Fischmeister
+	Sebastian Fischmeister
 \item[{\bf Degree:}]
 	MMath
 \end{namelist}
@@ -68,25 +69,6 @@ Useful in many areas.
 One possible application could be during Hardware in the Loop (HIL) testing to identify unwanted or undocumented functionality.
 A well trained model can identify flaws in the design of IoT devices to enforce security and safety.
 
-%By monitoring the trace of the power consumption in response to inputs, a model of the system can be constructed. %Furthermore, the use of the power consumption as an output is a popular form of non-instrusive side channel analysis.
-
-%Through side channel analysis and machine learning a solution can be both practical and feasible.
-
-%has enabled new anomaly detection techniques to identify when the system is in an abnormal state.
-
-
-%By identifying abnormal states in a specific execution sequence, 
-%A model can be constructed to identify the state and state transitions that occur in response to inputs.
-%With this model we can then identify when abnormal data occurs, referred to as anomaly detection.
-
-%distances - DTW, pearson
-
-%clustering algorithms - k means, dbscan, gmm
-
-%other - hmm, autoencoders
-
-
-
 \section*{Problem Statement} 
 %Now state explicitly the hypothesis you aim to
 %test. Make references to the items listed in the Reference section
@@ -101,14 +83,12 @@ A well trained model can identify flaws in the design of IoT devices to enforce 
     \item \textbf{Input Generator}: Given inputs and knowledge of previous state changes, what should be the next query to the system?
 \end{enumerate}
 
-\section*{Method}
-
-\subsection*{System}
+\section*{System}
 
 \includegraphics[scale=0.5]{Fuzzer.png}
 
-\subsection*{Change Detector}
-The Change Detector needs to be able to cluster responses from the system into observed states.
+\subsection*{State Detector}
+The State Detector needs to be able to determine what state the system is in given a response.
 There are several ways to do this.
 distance based: measure of how much the signal moved
 dtw: define a threshold. larger difference = more confident.
@@ -125,18 +105,31 @@ but we need some way of matching up signals (apparently you can align them using
 compute dtw distance to each expected state signal. (or cluster)
 return (current state) or (new state, msg that triggered it)
  
+%\begin{enumerate}
+%    \item receive signals
+%    \item align signals using cross correlation
+%    \item sample from expected signals (each representing a state) and add those to the group
+%    \item cluster the group using DBSCAN algorithm
+%    \item iterate through labels: if a label is in the same group as an expected signal, add it to the signal, update expected signal and state data. Else create a new state.
+%\end{enumerate}
+%
+%or \\
+
 \begin{enumerate}
-    \item receive signals
-    \item align signals using cross correlation
-    \item sample from expected signals (each representing a state) and add those to the group
-    \item cluster the group using DBSCAN algorithm
-    \item iterate through labels: if a label is in the same group as an expected signal, add it to the signal, update expected signal and state data. Else create a new state.
+    \item receive a response
+    \item calculate dtw to every expected state response
+    \item if within $\epsilon$ of one state, add it to the closest state. else if its within $\epsilon$ of two or more clusters, try joining them together. else not within $\epsilon$ of any: create a new state (parameter $\epsilon$: HOW CAN WE TUNE ITif 
+    \item align and re-compute expected state response
+    \item return (state (string), change detected (bool), distance to closest state?).
 \end{enumerate}
 
-parameters: eps, const * standard deviation of expected signals for each state,
+question: what should $\epsilon$ be? how can we tune it?\\
+question: how can we get confidence levels of being in a state?\\
+
+parameters: $\epsilon$
 data: expected signals per state, number of signals per state, standard deviation per state
 
-returns: (state(s), msg(s), all noise) indicating the state change(s) and the message(s) that triggered it.
+returns: (state(s), confidence) indicating the state change(s) and the message(s) that triggered it.
 
 \subsection*{Input Generator}
 
@@ -150,27 +143,42 @@ Elif (we have seen it before): pick a state we have not been to before.
 Else all states have been reached: end.
 note: need to verify that all write operations are the same and change with state. have only done so with reads.
 
-step 1: determine active msgs.
-step 2: try to change the state: send a bunch of messages while modifying one bit at a time depending on protocol (character for URL, bit for NMAP packets).
-step 3: receive response from change detector (yes + msg that triggered it, no, maybe, more than one + msgs)
+\begin{enumerate}
+    \item receive state
+    \item try to change the state: send a bunch of messages while modifying one bit at a time depending on protocol (character for URL, bit for NMAP packets).
+\end{enumerate}
+
+question: how can we determine which msg to send given a state? see \href{https://en.wikipedia.org/wiki/Active_learning_(machine_learning)}{Active Learning}, in particular, uncertainity sampling.
+To do uncertainity sampling we need to know the probability of being in a state (the confidence) to be returned by the state detector. \\
 
 parameters: protocol specification (json?)
 returns: message to send
 
-notes:
+notes:\\
 L star algorithm: can't because we don't have an oracle that can give us a counterexample, unless we search and depend on our clustering algorithm?
-randomization
+also we dont have a way to deal with non-determinism\\
+randomization is going to be important since we are exploring\\
+There are ways to have error: given state A if we expect to go to B from experience but we go to a new state C, thats an error\\
+perhaps genetic algorithms? first we explore a little to build a model then we train? 
+ie. which messages are trigger messages? start with a random selection,
+keep ones that trigger a state change, 
+refresh new ones ? \\
 
 \section*{Message Sender}
 Determined by protocol.
 Focus on I2C for now.
 
 \section*{Additional Modules or Functionality}
-method to convert states and transitions to mealy machine.
+method to convert states and transitions to mealy machine.\\
 message sender (already implemented for I2C)
-focus will be on I2C since system is already in place.
+focus will be on I2C since system is already in place.\\
+function to plot expected signals ie. what do they look like\\
 
-Data model: json? file that stores all states and state transitions.
+Data model: json? file that stores all states and state transitions.\\
+
+\section*{Applications}
+model Verification\\
+model security: can alert users if system is operating outside expected behaviour per state.\\
 
 \end{document}
 
