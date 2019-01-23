@@ -34,13 +34,11 @@
 
 \begin{namelist}{xxxxxxxxxxxx}
 \item[{\bf Title:}]
-	Black Box System Model Learning and Verification.
+	Black Box State Change Identification Through Side Channel Analysis
 \item[{\bf Author:}]
 	Johnathan DiMatteo
 \item[{\bf Supervisor:}]
 	Sebastian Fischmeister
-\item[{\bf Degree:}]
-	MMath
 \end{namelist}
 
 \section*{Motivation} 
@@ -50,25 +48,31 @@
 % and what have they achieved?
 
 %What is IoT?
-%The recent explosion of the Internet of Things (IoT) puts numerous embedded devices at the hands of governments, businesses, and consumers.
-%There will be as many as 50 billion IoT devices around the world by 2020 \cite{iotcisco}.
-%Their low cost has caused manufacturers to produce and sell them without sufficient security or safety features \cite{iotsec}.
-%If action is not taken, vulnerabilities in IoT devices can lead to harm both economically and otherwise.
 
-To enforce security and safety in devices, models must be validated.
-Validating a model ensures anomalous states and transitions are corrected to avoid security vulnerabilities.
-One proposed method to do this is a process of reverse engineering the system, called \textit{Model Learning}.
-Model learning aims to construct blackbox state diagram models of software and hardware systems by providing inputs and observing outputs.
-This has been a fundamental research problem studied for decades, but two recent advancements have allowed us to propose a new method.
-First, \textit{side channel analysis} has allowed us to study a system's response without the need to open the so called ``black box''.
-By treating a device as a black box system, one can monitor the power consumption to provide a non-intrusive approach.
-Traditional modelling tools can introduce timing errors and other anomalies. 
-The downside to this approach is the complexity of the response (ie. it is now a time series signal instead of a binary output).
-But \textit{machine learning} has opened new data driven approaches for dealing with time series modeling, allowing us to cluster signals to states.
-Useful in many areas;
-one possible application could be during Hardware in the Loop (HIL) testing to identify unwanted or undocumented functionality.
-A well trained model can identify flaws in the design of IoT devices to enforce security and safety.
+The recent explosion of the Internet of Things (IoT) puts numerous embedded devices at the hands of governments, businesses, and consumers.
+Their low cost has caused manufacturers to produce and sell them without sufficient security or safety features.
+If action is not taken, vulnerabilities in IoT devices can lead to harm both economically and otherwise.
+To enforce security and safety in these devices, we will identify state transitions in order to reverse engineer the protocol specifications.
+This way anomalies can be identified and corrected to avoid security vulnerabilities.
+Traditional Hardware-in-Loop (HIL) testing methods involve significant intrusion to the system being observed.
+Our approach is to monitor the execution of the system to identify transitions without opening up the so called ``black box'', a technique known as \textit{Side Channel Analysis}. 
 
+% ============= MODEL LEARNING ===============%
+%One proposed method to do this is a process of reverse engineering the system, called \textit{Model Learning}.
+%Model learning aims to construct blackbox state diagram models of software and hardware systems by providing inputs and observing outputs.
+
+%============== WHAT IS A STATE? COFFEE MACHINE EXAMPLE ====== %
+%This has been a fundamental research problem studied for decades, but two recent advancements have allowed us to propose a new method.
+%First, \textit{side channel analysis} has allowed us to study a system's response without the need to open the so called ``black box''.
+%By treating a device as a black box system, one can monitor the power consumption to provide a non-intrusive approach.
+%Traditional modelling tools can introduce timing errors and other anomalies. 
+%The downside to this approach is the complexity of the response (ie. it is now a time series signal instead of a binary output).
+%But \textit{state learning} has opened new data driven approaches for dealing with time series modeling, allowing us to cluster signals to states.
+
+%======= APPLICATIONS =======%
+%Useful in many areas;
+%one possible application could be during Hardware in the Loop (HIL) testing to identify unwanted or undocumented functionality.
+%A well trained model can identify flaws in the design of IoT devices to enforce security and safety.
 
 \section*{Problem Statement} 
 %Now state explicitly the hypothesis you aim to
@@ -80,15 +84,17 @@ A well trained model can identify flaws in the design of IoT devices to enforce 
 %applications?
 
 \begin{enumerate}
-    \item \textbf{State Detector}: Given a black box system, determine internal state changes in response to inputs in order to learn the system's behaviour.
-    \item \textbf{Input Generator}: Given the current state and knowledge of previous state changes, what should be the next query to the system?
+    \item \textbf{Change Detector}: Given a response from a black box system, determine if the state of the system has changed in order to learn the system's behaviour.
+    \item \textbf{Input Generator}: Given some inputs and knowledge of previous state changes, what should be the next query to the system?
 \end{enumerate}
 
 \section*{System}
 
-\includegraphics[scale=0.5]{Fuzzer.png}
+\includegraphics[scale=0.5]{change-detector.png}
 
 \subsection*{State Detector}
+% determines an output langage?
+The State Detector determines if the device has changed behaviour based on the response from the system being observed.
 The State Detector needs to be able to determine what state the system is in given a response.
 There are several ways to do this.
 distance based: measure of how much the signal moved
@@ -132,6 +138,39 @@ data: expected signals per state, number of signals per state, standard deviatio
 
 returns: (state(s), confidence) indicating the state change(s) and the message(s) that triggered it.
 
+The response from the system is a time series signal.
+The steps of the Change Detector are:
+\begin{enumerate}
+    \item Receive a response from the system.
+    \item Determine if the state has changed.
+    \item Return \{yes or no, confidence \}. 
+\end{enumerate}
+
+There are several ways to analyze time series signals:
+\begin{enumerate}
+    \item Distance Based
+    \item Feature Based
+    \item Deep Learning
+\end{enumerate}
+
+\textit{Distance Based}: using a metric to determine the similarity between two or more signals.
+Common metrics include Euclidean distance and Dynamic Time Warping (DTW).
+Since our response may have slight differences in timing, DTW is the best choice.
+
+\textit{Feature Based}: using calculated features of the signal such as the mean, standard deviation, skewness, kurtosis, etc.
+These features are then fed into a machine learning algorithm to determine whether or not the signal has changed.
+
+\textit{Deep Learning}: the signals themselves are feed into multi-layered neural networks.
+Similar to feature based methods except that the features are determined by the algorithms themselves.
+A downside to this method is that significant data is needed for good performance.
+
+%question: what should $\epsilon$ be? how can we tune it?\\
+%question: how can we turn real valued distance into a confidence?\\
+
+%parameters: $\epsilon$\\
+%data: current state response\\
+%returns: (yes/no, confidence)\\
+
 \subsection*{Input Generator}
 
 needs to know current state.
@@ -164,22 +203,25 @@ perhaps genetic algorithms? first we explore a little to build a model then we t
 ie. which messages are trigger messages? start with a random selection,
 keep ones that trigger a state change, 
 refresh new ones ? \\
+What message should we send to the system in order to trigger a state change?
+The Input Generator should keep track of each message and the result from the Change Detector and use this information.
 
-\section*{Message Sender}
-Determined by protocol.
-Focus on I2C for now.
+\begin{enumerate}
+    \item Receive answer from Change Detector.
+    \item Determine which message to query the system in order to try to change the state.
+\end{enumerate}
+
+There are several possible methods to determine which message to send next:
+\begin{enumerate}
+    \item Enumerate through all possibilities.
+    \item \href{https://en.wikipedia.org/wiki/Active_learning_(machine_learning)}{Active Learning}, in particular, uncertainty sampling.
+    \item \href{https://en.wikipedia.org/wiki/Genetic_algorithm}{Genetic Algorithms} to learn the best messages over time.
+\end{enumerate}
 
 \section*{Additional Modules or Functionality}
-method to convert states and transitions to mealy machine.\\
-message sender (already implemented for I2C)
-focus will be on I2C since system is already in place.\\
-function to plot expected signals ie. what do they look like\\
-
-Data model: json? file that stores all states and state transitions.\\
-
-\section*{Applications}
-model Verification\\
-model security: can alert users if system is operating outside expected behaviour per state.\\
+Protocol Specification: should be easy to switch from protocols. \\
+Message Sender: also determined by protocol, the focus is on I2C for now.\\
+Extract Protocol Method: given a list of messages that cause a state transition in the system, can a protocol be determined?
 
 \end{document}
 

@@ -1,7 +1,9 @@
+.vscode
+env/
+Input_data/
 data/
 Data/
 *.csv
-*.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

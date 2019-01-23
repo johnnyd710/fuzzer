@@ -8,35 +8,20 @@ OFFSET = 0
 class Offline():
     def __init__(self):
         click.echo("Offline mode activated.")
+        self.signals = []
 
-    def load(self, directory):
-        '''
-        gets signals from specified directory 
-        and returns a (n, l, 1) numpy array
-        where n is number of distinct signals and
-        l is length of each signal.
-        '''
+    def load(self, msg, directory = 'data/'):
+        """ gets signals from specified directory """
 
-        list_of_signals = []
+        n=0
 
-        n = 0
+        path = directory + msg
 
-        for filename in os.listdir(directory):
-            filename = directory + '/' + filename
-            list_of_signals.append(np.genfromtxt(filename, delimiter=','))
+        for filename in os.listdir(path):
+            filename = path + '/' + filename
+            self.signals.append((msg, np.genfromtxt(filename, delimiter=',')))
             n+=1
-        
-        no_signals = len(list_of_signals) # comment out if doing subsampling for testing
-        
-        signals = np.zeros([no_signals-1, LENGTH])   # replace 5 with n ! 
-        
-        for i, arr in enumerate(list_of_signals[1:(no_signals-1)]):
-            arr = arr[OFFSET:LENGTH+OFFSET]
-            signals[i][0:arr.shape[0]] = arr
-
-        self.signals = signals
-        self.index = 0
-        self.directory = directory
+        click.echo("%d signals loaded from message %s" % (n, msg))        
 
     def get_signal(self, msg):
         directory = './data/' + msg

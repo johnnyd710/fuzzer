@@ -18,7 +18,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import click
-from change_detector import Change_Detector
+from state_detector import State_Detector
 from offline import Offline
 import numpy as np
 
@@ -26,7 +26,7 @@ import numpy as np
 @click.option('--epsilon', '-e', default=100, help='epsilon value for similarity metric. default is 10000')
 def main(epsilon):
     # initialize
-    Change_Detector_ = Change_Detector(eps=epsilon)
+    Detector = State_Detector(eps=epsilon)
     Offline_ = Offline()
     # determine which message to send
 
@@ -36,12 +36,12 @@ def main(epsilon):
     msgs = ['reg0-bar', 'reg0-alt', 'reg0-bar-active', 'reg0-alt-active',
             'reg1-bar', 'reg1-alt', 'reg0-bar-active', 'reg1-alt-active']
 
-    for i in range(10):
+    for msg in range(10):
         msg = np.random.choice(msgs)
         click.echo(msg)
         response = Offline_.get_signal(msg)
         # process response 
-        Change_Detector_.update(response)
+        Detector.classify(msg, response)
 
 if __name__ == "__main__":
     main()
