@@ -17,8 +17,9 @@ from state_detector import State_Detector
 from offline import Offline
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 
-def main(eps, tol):
+def main(eps, tol, sample_size=500):
     # initialize
     Detector = State_Detector(eps=eps, tol=tol)
 
@@ -42,7 +43,7 @@ def main(eps, tol):
             signals[msg].append(np.genfromtxt(path, delimiter=','))
             # process response 
             
-    for i in range(1000):
+    for i in range(sample_size):
         msg = np.random.choice(msgs)
         if len(signals[msg]) != 0:
             response = signals[msg].pop()       
@@ -59,99 +60,111 @@ def main(eps, tol):
     states = [standby, barometer, altimeter]
     states_=[]
 
-    
     for i in range(3):
         tmp = Counter(obs[2] for obs in Detector.signals if obs[0] in states[i])
-        #print(tmp)
-        states_.append(max(tmp, key=tmp.get))
+        del tmp[None]
+        if sum(tmp.values()):
+            max_val = max(tmp, key=tmp.get)
+            if max_val not in states_:
+                states_.append(max_val)
+            else:
+                states_.append('Nothing')
+        else:
+            states_.append('Nothing')
     
-    #print(states_)
+    restarts = Detector.restarts
 
     from sklearn.metrics import confusion_matrix
 
+    # for each msg, write the state label that best represents it
     states_msgs = [states_[0], states_[0], states_[1], states_[2], states_[0], states_[0], states_[1], states_[2]]
-    true = [states_msgs[msgs.index(m[0])] for m in Detector.signals] # for msg in detector signals put the equivalent state 0,1 or 2 as a list in true
+    
+    # for msg in detector signals put the equivalent state 0,1 or 2 as a list in true
+    true = [states_msgs[msgs.index(m[0])] for m in Detector.signals] 
     pred = [m[2] for m in Detector.signals]
 
     no_of_noise_samples = 0
-    restarts = 0
     # remove noise from confusion matrix
     for idx, obs in enumerate(pred):
         if obs == None:
             no_of_noise_samples+=1
-            true[idx] = None
-        elif obs not in true:
-            restarts += 1
             true[idx] = None
     
     # now remove from true:
     true = [e for e in true if e != None]
 
     # now remove from pred
-    pred = [e for e in pred if e in true]
-
-    #print("Noise samples= %d"% no_of_noise_samples)
-    #print("Restarts = %d"% restarts)
-
-    assert len(true) == len(pred)
-
-    mat = confusion_matrix(true, pred)
-    #print(mat)
+    pred = [e for e in pred if e != None]
+    mat = confusion_matrix(true, pred, labels=list(set(pred)))
+    print(mat)
     mat = np.asarray(mat)
 
     TP = np.diag(mat)
-    FP = (np.sum(mat, axis=1)) - TP
-    FN = (np.sum(mat, axis=0)) - TP
+    FP = np.sum(mat, axis=1) - TP
+    FN = np.sum(mat, axis=0) - TP
+    TP, FP, FN = np.sum(TP), np.sum(FP), np.sum(FN)
     Precision = TP / (TP+FP)
     Recall = TP / (TP+FN)
-    F1 = 2 * (Precision*Recall) / (Recall + Precision)
+    F1 = 2 * (Precision*Recall) / (Recall + Precision) # MICRO
     #print(np.average(F1))
 
-    return(np.average(F1)*100, no_of_noise_samples, restarts)
+    return(F1*100, no_of_noise_samples, restarts)
 
 
 if __name__ == "__main__":
+    tol = 400
+    x_range = np.arange(0,1000,25)
+
+    f1 = []
+    noise = []
+    restart = []
+    for eps in x_range:
+        f, n, r = main(eps, tol)
+        f1.append(f)
+        noise.append(n)
+        restart.append(r)
+
+    plt.style.use('ggplot')
+
+    plt.plot(x_range, f1, label = "F1 Score")
+    plt.xlabel("Distance")
+    plt.ylabel("Percentage (%)")
+    plt.savefig('../../Documents/figs/eps.png')
+    plt.clf()
+    
+    plt.plot(x_range, restart, label = "No. of Restarts")
+    plt.plot(x_range, noise, label = "No. of Noise Samples")
+    plt.xlabel("Distance")
+    plt.ylabel("Count")
+    plt.legend()
+    plt.savefig('../../Documents/figs/eps-other.png')
+    plt.clf()
+
     f1 = []
     noise = []
     restart = []
 
-    tol = 200 
-    for eps in range(0, 200, 10):
+    eps = 200 
+    x_range = np.arange(0,1000,25)
+    for tol in x_range:
         f, n, r = main(eps, tol)
         f1.append(f)
         noise.append(n)
         restart.append(r)
 
-    import matplotlib.pyplot as plt
-    plt.plot(f1, label = "F1 Score")
-    plt.plot(noise, label = "No. of Noise Samples")
-    plt.plot(restart, label = "No. of Restarts")
-    plt.legend()
-    plt.title("Classifier Metrics with Epsilon Varied and Tolerance at "+ str(tol))
-    plt.xlabel("Value of Epsilon (DTW Distance)")
+    plt.plot(x_range, f1, label = "F1 Score")
+    plt.xlabel("Distance")
     plt.ylabel("Percentage (%)")
-    plt.show()
+    plt.savefig('../../Documents/figs/tol.png')
+    plt.clf()
 
-
-    eps = 100 
-    for tol in range(100, 700, 30):
-        f, n, r = main(eps, tol)
-        f1.append(f)
-        noise.append(n)
-        restart.append(r)
-
-        plt.plot(f1, label = "F1 Score")
-
-    plt.plot(noise, label = "No. of Noise Samples")
-    plt.plot(restart, label = "No. of Restarts")
+    plt.plot(x_range, restart, label = "No. of Restarts")
+    plt.plot(x_range, noise, label = "No. of Noise Samples")
+    plt.xlabel("Distance")
+    plt.ylabel("Count")
     plt.legend()
-    plt.title("Classifier Metrics with Tolerance Varied and Epsilon at "+ str(eps))
-    plt.xlabel("Value of Tolerance (DTW Distance)")
-    plt.ylabel("Percentage")
-    plt.show()
+    plt.savefig('../../Documents/figs/tol-other.png')
+    plt.clf()
 
-
-
-
-    exit()
-
+#TODO: add y axis for counts
+# noise sample line is constant?

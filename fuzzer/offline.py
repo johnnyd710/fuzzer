@@ -19,7 +19,7 @@ class Offline():
 
         for filename in os.listdir(path):
             filename = path + '/' + filename
-            self.signals.append((msg, np.genfromtxt(filename, delimiter=',')))
+            self.signals.append(np.genfromtxt(filename, delimiter=','))
             n+=1
         click.echo("%d signals loaded from message %s" % (n, msg))        
 

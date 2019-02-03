@@ -22,19 +22,31 @@ from state_detector import State_Detector
 from offline import Offline
 import numpy as np
 
+from tslearn.utils import to_time_series_dataset
+
+# get response (offline for now)
+msgs = ['reg0-bar', 'reg0-alt', 'reg0-bar-active', 'reg0-alt-active',
+        'reg1-bar', 'reg1-alt', 'reg0-bar-active', 'reg1-alt-active']
+
+
 @click.command()
-@click.option('--epsilon', '-e', default=100, help='epsilon value for similarity metric. default is 10000')
-def main(epsilon):
+@click.option('--k', '-k', default=3, help='K, number of clusters for K-Means. default is 3.')
+def main(k):
     # initialize
-    Detector = State_Detector(eps=epsilon)
+    Detector = State_Detector(k=k)
     Offline_ = Offline()
+
     # determine which message to send
+    for m in msgs:
+        Offline_.load(m)
 
-    # send the message
+    #data = to_time_series_dataset(Offline_.signals)
+    data = np.array(Offline_.signals)
+    print(data.shape)
 
-    # get response (offline for now)
-    msgs = ['reg0-bar', 'reg0-alt', 'reg0-bar-active', 'reg0-alt-active',
-            'reg1-bar', 'reg1-alt', 'reg0-bar-active', 'reg1-alt-active']
+    Detector.pretrain(data)
+
+    Detector.plot()
 
     for msg in range(10):
         msg = np.random.choice(msgs)
