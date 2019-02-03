@@ -1,3 +1,5 @@
+#!/usr/bin/python3.5
+
 import csv
 import sys
 
@@ -26,7 +28,7 @@ for line in test_file:
       time =  float(line[0:12])
       signal = float(line[13:26])
 
-      if signal < -200:
+      if signal <= -200:
             up = 1
 
       if signal > -200 and up and signal_detected == 0:

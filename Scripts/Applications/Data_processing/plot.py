@@ -1,3 +1,5 @@
+#!/usr/bin/python3.5
+
 import matplotlib.pyplot as plt
 import csv, sys
 
