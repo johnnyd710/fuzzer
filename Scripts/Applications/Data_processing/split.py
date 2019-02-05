@@ -76,7 +76,7 @@ for line in test_file:
 
       current_csv.write("%.13f \n" % (signal))
 
-      if time >= end_timestamps[i]:
+      if time >= (end_timestamps[i]+ 0.0004):
             internal_counter = 0
             current_csv.close()
             file_open = 0

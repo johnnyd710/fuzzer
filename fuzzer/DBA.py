@@ -98,6 +98,7 @@ def DBA_update(center, series, cost_mat, path_mat, delta_mat):
     options_argmin = [(-1, -1), (0, -1), (-1, 0)]
     updated_center = np.zeros(center.shape)
     n_elements = np.array(np.zeros(center.shape), dtype=int)
+
     center_length = len(center)
     for s in series:
         s_len = len(s)

@@ -18,7 +18,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import click
-from state_detector import State_Detector
+from state_detector import ts_cluster
 from offline import Offline
 import numpy as np
 
@@ -30,31 +30,34 @@ msgs = ['reg0-bar', 'reg0-alt', 'reg0-bar-active', 'reg0-alt-active',
 
 
 @click.command()
-@click.option('--k', '-k', default=3, help='K, number of clusters for K-Means. default is 3.')
-def main(k):
+@click.option('--k', '-k', default=4, help='K, number of clusters for K-Means. default is 3.')
+@click.option('--txt_out', '-o', default='./out', help='Output directory for logging/stats. default is ./out.')
+@click.option('--centroids_in', '-i', default='./out/centroids', help='Input directory for centroids. default is ./out/centroids.')
+def main(k, txt_out, centroids_in):
     # initialize
-    Detector = State_Detector(k=k)
+    Detector = ts_cluster(k)
     Offline_ = Offline()
 
+    ts_cluster.load_centroids(centroids_in)
+    print("Centroids successfully loaded from %s" % centroids_in)
+
     # determine which message to send
-    for m in msgs:
-        Offline_.load(m)
+    #for m in msgs:
+    #    Offline_.load(m)
+
+    Offline_.load('mpl-test')
 
     #data = to_time_series_dataset(Offline_.signals)
     data = np.array(Offline_.signals)
     print(data.shape)
 
-    Detector.pretrain(data)
-
-    Detector.plot()
-
-    for msg in range(10):
+    for msg in range(5):
         msg = np.random.choice(msgs)
         click.echo(msg)
         response = Offline_.get_signal(msg)
         # process response 
-        Detector.classify(msg, response)
-
+        # classify
+        
 if __name__ == "__main__":
     main()
     exit()
