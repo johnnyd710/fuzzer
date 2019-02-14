@@ -8,7 +8,7 @@ description:
 '''
 
 from pylstar.LSTAR import LSTAR
-from abstraction.i2c_machine import I2CMachineKnowledgeBase
+from systems.I2C import I2CMachineKnowledgeBase
 
 # list of messages accepted by the coffee machine
 input_vocabulary = [

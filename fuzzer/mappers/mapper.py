@@ -6,12 +6,11 @@ from abc import ABC, abstractmethod
 import numpy as np
 import csv 
 
-class MessageSender(ABC):
+class Mapper(ABC):
     def __init__(self, name):
         '''
         initialize with 
         '''
-        self.vocab = []
         super().__init__()
 
     def save(self, filename):
@@ -24,10 +23,10 @@ class MessageSender(ABC):
         self.clus = np.loadtxt(filename + '.csv', skiprows=1, usecols=1, delimiter=',')
 
     @abstractmethod
-    def plot_clusters(self):
+    def Send_Message_To_System(self):
         pass
 
     @abstractmethod
-    def cluster(self):
+    def Map(self):
         pass
     
