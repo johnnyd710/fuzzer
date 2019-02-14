@@ -1,18 +1,18 @@
+"""
+this goes ON the device
+"""
+
 from abc import ABC, abstractmethod
 import numpy as np
 import csv 
 
-class Cluster(ABC):
+class MessageSender(ABC):
     def __init__(self, name):
         '''
         initialize with 
         '''
-        self.name = name
-        self.clus = np.array([])
+        self.vocab = []
         super().__init__()
-
-    def __str__(self):
-        return self.name
 
     def save(self, filename):
         with open(filename + '.csv', 'w') as fh:

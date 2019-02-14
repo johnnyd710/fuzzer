@@ -1,8 +1,40 @@
 \begin{thebibliography}{1}
 
-\bibitem{vaandrager2017model}
+\bibitem{argyros2016sfadiff}
+George Argyros, Ioannis Stais, Suman Jana, Angelos~D Keromytis, and Aggelos
+  Kiayias.
+\newblock Sfadiff: Automated evasion attacks and fingerprinting using black-box
+  differential automata learning.
+\newblock In {\em Proceedings of the 2016 ACM SIGSAC Conference on Computer and
+  Communications Security}, pages 1690--1701. ACM, 2016.
+
+\bibitem{chalupar2014automated}
+Georg Chalupar, Stefan Peherstorfer, Erik Poll, and Joeri De~Ruiter.
+\newblock Automated reverse engineering using lego{\textregistered}.
+\newblock {\em WOOT}, 14:1--10, 2014.
+
+\bibitem{TLS}
+Joeri de~Ruiter and Erik Poll.
+\newblock Protocol state fuzzing of {TLS} implementations.
+\newblock In {\em 24th {USENIX} Security Symposium ({USENIX} Security 15)},
+  pages 193--206, Washington, D.C., 2015. {USENIX} Association.
+
+\bibitem{fiteruau2016combining}
+Paul Fiter{\u{a}}u-Bro{\c{s}}tean, Ramon Janssen, and Frits Vaandrager.
+\newblock Combining model learning and model checking to analyze tcp
+  implementations.
+\newblock In {\em International Conference on Computer Aided Verification},
+  pages 454--471. Springer, 2016.
+
+\bibitem{iot-automata}
+M.~Tappler, B.~K. Aichernig, and R.~Bloem.
+\newblock Model-based testing iot communication via active automata learning.
+\newblock In {\em 2017 IEEE International Conference on Software Testing,
+  Verification and Validation (ICST)}, volume~00, pages 276--287, March 2017.
+
+\bibitem{Vaandrager:2017:ML:3042068.2967606}
 Frits Vaandrager.
 \newblock Model learning.
-\newblock {\em Communications of the ACM}, 60(2):86--95, 2017.
+\newblock {\em Communications of the ACM}, 60(2):86--95, January 2017.
 
 \end{thebibliography}

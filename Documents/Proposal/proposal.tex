@@ -31,7 +31,7 @@
 
 \begin{namelist}{xxxxxxxxxxxx}
 \item[{\bf Title:}]
-    Learning Automata of Black Box Software and Hardware via Side Channel Analysis
+    Learning Automata of Black Box Software and Hardware with Side Channel Analysis
 \item[{\bf Author:}]
 	Johnathan DiMatteo
 \item[{\bf Supervisor:}]
@@ -43,13 +43,22 @@
 % research area. What is the problem you are tackling, and why is it
 % worthwhile solving? Who has already done some work in this area,
 % and what have they achieved?
+How do we verify software systems are properly designed and secure?
+One way is to create a \textit{model} of the software to compare to the specifications.
+There are numerous ways to infer models by analyzing code or performing tests (such as black box fuzzing).
+Black box fuzzing sends random or malformed input to a system to get the system to crash or respond in a way that does not conform to specifications.
+The goal is to ensure a completed system does not have unintended behaviour, which could ultimately lead to vulnerabilities.
+But \textit{model learning}, also known as automata learning, is about algorithms that are able to learn a complete representation of software systems automatically.
+Similar to how humans learn, the algorithms provide inputs and observe outputs to determine the global states of the system.
+They use past behaviour of the system to select the next input to send.
+Over time, they can identify valid transitions and which states the system should be in to build an accurate representation (such as a state diagram or other) of the software system.
+With this representation, vulnerabilities should be easy to spot.
+Some examples of case studies where vulnerabilities were identified using model learning are: Transport Layer Security (TLS) protocols \cite{TLS}, Windows 8 TCP Client \cite{fiteruau2016combining}, and credit card readers \cite{chalupar2014automated}. 
+As more and more companies are adopting and using IoT devices, this has become an extremely important research topic to ensure software and hardware systems conform to specifications and work as intended.
 
-The goal of this paper is to enforce security and safety in these devices through reverse engineering, or \textit{Model Learning}:
-automatic algorithms that ``determine in which global states the device can be and which state transitions and outputs occur in response to which inputs'' \cite{vaandrager2017model}.
+The goal of this paper is to enforce security and safety in devices through \textit{Model Learning}.
 % ============= MODEL LEARNING ===============%
 Our proposed method is to use \textit{Side Channel Analysis} to make learning more ``black box''.
-One application of this technology is to verify software and hardware systems conform to design specifications.
-Another is to perform this on a live system to see if it has been compromised (i.e. an attacker downloads new firmware onto the device), thus alerting users.
 
 \subsection*{Background}
 
@@ -67,10 +76,15 @@ We will be focusing on a specific type of state diagram model known as a Mealy M
 %======WHAT IS A STATE DIAGRAM MODEL ========%
 % ======= INPUTS? OUTPUTS? ===== %
 
-\begin{figure}[!h]
-    \hspace*{2cm}\includegraphics[scale=0.5]{coffee}
-    \caption{Example of a simple Mealy Machine for a coffee maker.}
-    \label{coffee}
+%\begin{figure}[!h]
+%    \hspace*{2cm}\includegraphics[scale=0.5]{coffee}
+%    \caption{Example of a simple Mealy Machine for a coffee maker.}
+%    \label{coffee}
+%\end{figure}
+\begin{figure}
+    \centering
+    \includegraphics[scale=0.5]{state-detector.png}
+    \label{The system under active model learning.}
 \end{figure}
 
 \section*{Problem Statement} 
@@ -81,11 +95,6 @@ We will be focusing on a specific type of state diagram model known as a Mealy M
 %Explain what you expect will be accomplished by undertaking this
 %particular project.  Moreover, is it likely to have any other
 %applications?
-\begin{figure}[!h]
-    \centering
-    \includegraphics[scale=0.5]{state-detector.png}
-    \label{The system under active model learning.}
-\end{figure}
 
 \begin{enumerate}
     \item \textbf{Input Generator}: Given the current predicted state (\textbf{output? - ask Sebastian}) and history of previous states (\textbf{outputs?}) and queries, determine the next query that is most likely to induce a state change in the system under observation.

@@ -18,7 +18,7 @@ import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 import click
-from state_detector import ts_cluster
+from classifiers.kmeans import Kmeans
 from offline import Offline
 import numpy as np
 
@@ -35,10 +35,10 @@ msgs = ['reg0-bar', 'reg0-alt', 'reg0-bar-active', 'reg0-alt-active',
 @click.option('--centroids_in', '-i', default='./out/centroids', help='Input directory for centroids. default is ./out/centroids.')
 def main(k, txt_out, centroids_in):
     # initialize
-    Detector = ts_cluster(k)
+    Detector = Kmeans(k)
     Offline_ = Offline()
 
-    ts_cluster.load_centroids(centroids_in)
+    Kmeans.load_centroids(centroids_in)
     print("Centroids successfully loaded from %s" % centroids_in)
 
     # determine which message to send

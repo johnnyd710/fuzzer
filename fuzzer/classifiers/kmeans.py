@@ -11,9 +11,8 @@ import matplotlib.pylab as plt
 import numpy as np
 from progress.bar import Bar
 import os
-from DBA import performDBA
 
-class ts_cluster(object):
+class Kmeans(object):
 	def __init__(self,num_clust):
 		'''
 		num_clust is the number of clusters for the k-means algorithm
@@ -85,49 +84,6 @@ class ts_cluster(object):
 					self.centroids[key] = np.divide(clust_sum, len(self.assignments[key]))
 				else:
 					self.centroids[key] = 0
-
-	def k_means_clust_dba(self,data,num_iter,w,progress=False, dba_sample=100):
-		'''
-		k-means clustering algorithm for time series data.  dynamic time warping Euclidean distance
-			used as default similarity measure. 
-		'''
-		idx= np.random.choice(data.shape[0], self.num_clust)
-		self.centroids= data[idx]
-
-		for n in range(num_iter):
-			if progress:
-				print('iteration '+str(n+1))
-				bar = Bar('Processing', max=data.shape[0])
-
-			#assign data points to clusters
-			self.assignments={}
-			for ind,i in enumerate(data):
-				min_dist=float('inf')
-				closest_clust=None
-				for c_ind,j in enumerate(self.centroids):
-					if self.LB_Keogh(i,j,5)<min_dist:
-						cur_dist=self.DTWDistance(i,j,w)
-						if cur_dist<min_dist:
-							min_dist=cur_dist
-							closest_clust=c_ind
-				if closest_clust in self.assignments:
-					self.assignments[closest_clust].append(ind)
-				else:
-					self.assignments[closest_clust]=[]
-				if progress: bar.next()
-			if progress:
-				bar.finish()
-				print('calculating dba average ...')
-
-			#recalculate centroids of clusters using DBA, only take a sample (otherwise too expensive)
-			for key in self.assignments:				
-				#series = data[np.random.choice(self.assignments[key], dba_sample)]
-				series = data[self.assignments[key]]
-				if len(series) != 0:
-					self.centroids[key] = performDBA(series)
-				else:
-					self.centroids[key] = 0
-
 
 	def classify(self, response):
 		""" calculate dist to each clust, return closest """
