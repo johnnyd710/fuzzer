@@ -1,32 +1,40 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-this goes ON the device
+author: john dimatteo
+
+desc:
+recieves a sequence of messages,
+then sends them one by one to the device
+
 """
 
-from abc import ABC, abstractmethod
-import numpy as np
-import csv 
+from redis import Redis
+import time
+from I2C import I2C_Bus as Device
+# from test import Mapper_Test as Device
 
-class Mapper(ABC):
-    def __init__(self, name):
-        '''
-        initialize with 
-        '''
-        super().__init__()
 
-    def save(self, filename):
-        with open(filename + '.csv', 'w') as fh:
-            writer = csv.writer(fh, delimiter=',')
-            writer.writerow(['id','val'])
-            writer.writerows(enumerate(self.clus))
+def main():
 
-    def load(self, filename):
-        self.clus = np.loadtxt(filename + '.csv', skiprows=1, usecols=1, delimiter=',')
+    r = Redis(host='localhost', port=6379, db=0)
+    p = r.pubsub()
+    p.subscribe('Comms')
 
-    @abstractmethod
-    def Send_Message_To_System(self):
-        pass
+    Mapper = Device()
 
-    @abstractmethod
-    def Map(self):
-        pass
-    
+    while True:
+        message = p.get_message()
+        if message:
+            # do something
+            Mapper.Map(message['data'])
+
+        time.sleep(0.01)
+
+    p.close()
+
+    exit()
+
+
+if __name__ == "__main__":
+    main()

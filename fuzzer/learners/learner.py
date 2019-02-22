@@ -8,7 +8,8 @@ description:
 '''
 
 from pylstar.LSTAR import LSTAR
-from systems.I2C import I2CMachineKnowledgeBase
+from I2C import I2CMachineKnowledgeBase
+from CoffeeMachineTest import CoffeeMachineKnowledgeBase
 
 # list of messages accepted by the coffee machine
 input_vocabulary = [
@@ -19,17 +20,16 @@ input_vocabulary = [
     "PRESS_BUTTON_C"
 ]
 # instanciates our CoffeeMachine MAT
-I2CBase = I2CMachineKnowledgeBase()
+Device = CoffeeMachineKnowledgeBase("CoffeeMachineTest.py")
 try:
     # starts the coffee machine
-    I2CBase.start()
+    Device.start()
     # learns its grammar
-    lstar = LSTAR(input_vocabulary, I2CBase, max_states = 10)
+    lstar = LSTAR(input_vocabulary, Device, max_states=10)
     # stores the coffee machine state machine
     i2c_state_machine = lstar.learn()
 
     # displays the DOT code of the state machine
     print(i2c_state_machine.build_dot_code())
 finally:
-   I2CBase.stop()
-        
+    Device.stop()    

@@ -1,13 +1,14 @@
 import time
 import abc
 import socket
-
+import sys
 from pylstar.tools.Decorators import PylstarLogger
 from pylstar.KnowledgeBase import KnowledgeBase
 from pylstar.tools.Decorators import PylstarLogger
 from pylstar.ActiveKnowledgeBase import ActiveKnowledgeBase
 from pylstar.Letter import Letter, EmptyLetter
 from pylstar.Word import Word
+
 
 @PylstarLogger
 class I2CMachineKnowledgeBase(ActiveKnowledgeBase):
@@ -17,13 +18,12 @@ class I2CMachineKnowledgeBase(ActiveKnowledgeBase):
         self.target_port = target_port
         self.timeout = timeout
 
-    def start_target(self):     
+    def start_target(self): 
         pass
 
     def stop_target(self):
         """ reset device """
         pass
-        
 
     def submit_word(self, word):
         self._logger.debug("Submiting word '{}' to the network target".format(word))

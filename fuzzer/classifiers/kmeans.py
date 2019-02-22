@@ -9,19 +9,20 @@ changes:
 
 import matplotlib.pylab as plt
 import numpy as np
-from progress.bar import Bar
 import os
 
+
 class Kmeans(object):
-	def __init__(self,num_clust):
+
+	def __init__(self, num_clust):
 		'''
 		num_clust is the number of clusters for the k-means algorithm
 		assignments holds the assignments of data points (indices) to clusters
 		centroids holds the centroids of the clusters
 		'''
-		self.num_clust=num_clust
-		self.assignments={}
-		self.centroids=[]
+		self.num_clust = num_clust
+		self.assignments = {}
+		self.centroids = []
 
 	def load_centroids(self, path):
 		self.centroids = []
