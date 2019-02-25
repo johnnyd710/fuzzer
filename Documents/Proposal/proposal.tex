@@ -44,6 +44,7 @@
 % worthwhile solving? Who has already done some work in this area,
 % and what have they achieved?
 How do we verify software systems are properly designed and secure?
+Defending against security through obscurity.
 One way is to create a \textit{model} of the software to compare to the specifications.
 There are numerous ways to infer models by analyzing code or performing tests (such as black box fuzzing).
 Black box fuzzing sends random or malformed input to a system to get the system to crash or respond in a way that does not conform to specifications.
@@ -87,6 +88,14 @@ We will be focusing on a specific type of state diagram model known as a Mealy M
     \label{The system under active model learning.}
 \end{figure}
 
+\section{Assumptions}
+The first step to discover hidden functionality is to obtain the input and output alphabet of the protocol.
+We can do this through reverse engineering the message format of the black box, otherwise known as protocol fuzzing (cite).
+We will assume the input alphabet is known (and the hidden functionality?).
+Reasonable because you can use protocol fuzzing to determine the input language automatically.
+
+Any input not belonging to the known input is considering to be hidden.
+
 \section*{Problem Statement} 
 %Now state explicitly the hypothesis you aim to
 %test. Make references to the items listed in the Reference section
@@ -95,6 +104,8 @@ We will be focusing on a specific type of state diagram model known as a Mealy M
 %Explain what you expect will be accomplished by undertaking this
 %particular project.  Moreover, is it likely to have any other
 %applications?
+
+Given the input alphabet of a black box system, reverse engineer the FSM representing the system to find undocumented functionality.
 
 \begin{enumerate}
     \item \textbf{Input Generator}: Given the current predicted state (\textbf{output? - ask Sebastian}) and history of previous states (\textbf{outputs?}) and queries, determine the next query that is most likely to induce a state change in the system under observation.
