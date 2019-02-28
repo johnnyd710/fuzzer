@@ -17,6 +17,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from downsample import downsample
+from split import split
 
 PATH_TO_CENTROIDS = "../out/centroids"
 PATH_TO_CAPTURE_SCRIPT = "../../scripts/acquire_to_disk"
@@ -27,10 +28,11 @@ REDIS_HOST = "192.168.6.1"
 POWERTRACE_LOG = "I2C_TEST"
 CAPTURE_LENGTH = "1"
 SAMPLE_RATE = "10"
-INPUT_RANGE = "200mV"
+INPUT_RANGE = "400mV"
 DOWNSAMPLE_DIV = "100"
 PATH_TO_BIN2TXT = "../../scripts/bin2txt"
 NO_CHANNELS="2"
+SPLIT_TRACE_PATH = "../out/traces/trace-"
 
 
 def main():
@@ -67,20 +69,22 @@ def main():
             subprocess.call([PATH_TO_BIN2TXT, NO_CHANNELS, FULL_PATH_TO_TRACE, 
                              SAMPLE_RATE, INPUT_RANGE])
 
-            # f = open(FULL_PATH_TO_TRACE, 'rb')
-            # trace = np.fromfile(f, dtype=float)
-            trace = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-A.txt", dtype=float, usecols = (1))
-            #f = open(FULL_PATH_TO_TRACE+"--channel-B.txt", 'r')
-            #gpio = np.fromfile(f, dtype=float)
-            gpio = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-B.txt", dtype=float, usecols = (1))
+            #trace = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-A.txt", dtype=float, usecols = (1))
+            #gpio = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-B.txt", dtype=float, usecols = (1))
+            # SPLIT
+            split(FULL_PATH_TO_TRACE + "--channel-A.txt", 
+                  FULL_PATH_TO_TRACE + "--channel-B.txt",
+                  SPLIT_TRACE_PATH + time_format)
+            
+            trace = np.genfromtxt(SPLIT_TRACE_PATH + time_format + '.csv', dtype=float)
             # DOWNSAMPLE
             trace = downsample(trace, DOWNSAMPLE_DIV)
-            gpio = downsample(gpio, DOWNSAMPLE_DIV)
+            #gpio = downsample(gpio, DOWNSAMPLE_DIV)
             print("Trace Length: ")
             print(trace.shape)
             # PLOT
             plt.plot(trace)
-            plt.plot(gpio)
+            #plt.plot(gpio)
             plt.show()
             #label = classifier.classify(trace)
             #r.publish(LABEL_CHANNEL, label)

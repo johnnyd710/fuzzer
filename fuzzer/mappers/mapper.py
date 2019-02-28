@@ -28,7 +28,7 @@ def main():
         message = p.get_message()
         if message:
             # wait a second
-            time.sleep(0.2)
+            time.sleep(0.5)
             # do something
             Mapper.Map(message['data'].decode())
 

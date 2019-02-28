@@ -22,15 +22,16 @@ class I2C_Bus():
         op, adr, reg, data = msg.split("/")
         GPIO.setup("P8_7", GPIO.OUT)
         if op == 'w':
-            self.HIGH_LOW(0.2)
+            self.HIGH_LOW(0.02)
             self.Send_Message_To_System(adr, reg, data)
-            self.HIGH_LOW(0.1)
-            self.HIGH_LOW(0.1)
+            self.HIGH_LOW(0.01)
+            self.HIGH_LOW(0.01)
         else:
-            self.HIGH_LOW(0.2)
+            self.HIGH_LOW(0.02)
             _ = self.Recieve_Message_From_System(adr, reg)
-            self.HIGH_LOW(0.1)
-            self.HIGH_LOW(0.1)
+            self.HIGH_LOW(0.01)
+            self.HIGH_LOW(0.01)
+
 
     def Send_Message_To_System(self, device_address, register_offset, data):    
         list = [int(str(data), 16)]
