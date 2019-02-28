@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
@@ -15,33 +14,76 @@ import time
 from kmeans import Kmeans
 import subprocess
 import numpy as np
+import matplotlib.pyplot as plt
+from datetime import datetime
+from downsample import downsample
 
 PATH_TO_CENTROIDS = "../out/centroids"
-PATH_TO_CAPTURE_SCRIPT = "../scripts/capture.sh"
-PATH_TO_TRACE = "./trace"
+PATH_TO_CAPTURE_SCRIPT = "../../scripts/acquire_to_disk"
+PATH_TO_TRACE = "/Digitizer/captured-data/"
 LABEL_CHANNEL = "label"
 COMMS_CHANNEL = "Comms"
+REDIS_HOST = "192.168.6.1"
+POWERTRACE_LOG = "I2C_TEST"
+CAPTURE_LENGTH = "1"
+SAMPLE_RATE = "10"
+INPUT_RANGE = "200mV"
+DOWNSAMPLE_DIV = "100"
+PATH_TO_BIN2TXT = "../../scripts/bin2txt"
+NO_CHANNELS="2"
 
 
 def main():
 
-    r = Redis(host='localhost', port=6379, db=0)
+    r = Redis(host=REDIS_HOST, port=6379, db=0)
     p = r.pubsub()
     p.subscribe(COMMS_CHANNEL)
 
-    classifier = Kmeans()
+    _ = p.get_message()
+
+    #classifier = Kmeans()
     # load in the offline model
-    classifier.load_centroids(PATH_TO_CENTROIDS)
+    #classifier.load_centroids(PATH_TO_CENTROIDS)
 
     while True:
         message = p.get_message()
         if message:
             # execute capture script
-            subprocess.call([PATH_TO_CAPTURE_SCRIPT])
-            file = open(PATH_TO_TRACE, 'rb')
-            trace = np.fromfile(file, dtype=float)
-            label = classifier.classify(trace)
-            r.publish(LABEL_CHANNEL, label)
+            subprocess.call([PATH_TO_CAPTURE_SCRIPT, SAMPLE_RATE, 
+                             INPUT_RANGE,
+                             CAPTURE_LENGTH, 
+                             POWERTRACE_LOG, NO_CHANNELS])
+            now = datetime.now()
+            time_format = now.strftime("%Y-%m-%d-%H%M")
+            FULL_PATH_TO_TRACE = PATH_TO_TRACE + \
+                                   time_format + \
+                                          "--" + \
+                                   SAMPLE_RATE + \
+                                   "MSPS--"    + \
+                                   INPUT_RANGE + \
+                                          "--" + \
+                                POWERTRACE_LOG
+
+            subprocess.call([PATH_TO_BIN2TXT, NO_CHANNELS, FULL_PATH_TO_TRACE, 
+                             SAMPLE_RATE, INPUT_RANGE])
+
+            # f = open(FULL_PATH_TO_TRACE, 'rb')
+            # trace = np.fromfile(f, dtype=float)
+            trace = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-A.txt", dtype=float, usecols = (1))
+            #f = open(FULL_PATH_TO_TRACE+"--channel-B.txt", 'r')
+            #gpio = np.fromfile(f, dtype=float)
+            gpio = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-B.txt", dtype=float, usecols = (1))
+            # DOWNSAMPLE
+            trace = downsample(trace, DOWNSAMPLE_DIV)
+            gpio = downsample(gpio, DOWNSAMPLE_DIV)
+            print("Trace Length: ")
+            print(trace.shape)
+            # PLOT
+            plt.plot(trace)
+            plt.plot(gpio)
+            plt.show()
+            #label = classifier.classify(trace)
+            #r.publish(LABEL_CHANNEL, label)
         time.sleep(0.001)
 
     p.close()

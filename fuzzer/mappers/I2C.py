@@ -7,6 +7,7 @@ import time
 import smbus
 import Adafruit_BBIO.GPIO as GPIO
 
+
 class I2C_Bus():
     """  recieves messages from Input Generator and sends them to system in a way the system can understand  """
 
@@ -16,10 +17,10 @@ class I2C_Bus():
         representing the available input space"""
         super().__init__()
         self.bus = smbus.SMBus(int(interface))
-        GPIO.setup("P8_7", GPIO.OUT)
 
     def Process_Message(self, msg):
         op, adr, reg, data = msg.split("/")
+        GPIO.setup("P8_7", GPIO.OUT)
         if op == 'w':
             self.HIGH_LOW(0.2)
             self.Send_Message_To_System(adr, reg, data)
