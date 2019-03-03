@@ -29,11 +29,12 @@ POWERTRACE_LOG = "I2C_TEST"
 CAPTURE_LENGTH = "1"
 SAMPLE_RATE = "10"
 INPUT_RANGE = "400mV"
-DOWNSAMPLE_DIV = "100"
+DOWNSAMPLE_DIV = False
+DOWNSAMPLE_THROW = 100
 PATH_TO_BIN2TXT = "../../scripts/bin2txt"
 NO_CHANNELS="2"
 SPLIT_TRACE_PATH = "../out/traces/trace-"
-
+NO_CLUSTERS = 5
 
 def main():
 
@@ -43,9 +44,9 @@ def main():
 
     _ = p.get_message()
 
-    #classifier = Kmeans()
+    classifier = Kmeans(NO_CLUSTERS)
     # load in the offline model
-    #classifier.load_centroids(PATH_TO_CENTROIDS)
+    classifier.load_centroids(PATH_TO_CENTROIDS)
 
     while True:
         message = p.get_message()
@@ -65,28 +66,40 @@ def main():
                                    INPUT_RANGE + \
                                           "--" + \
                                 POWERTRACE_LOG
-
+            start_bin = time.clock()
             subprocess.call([PATH_TO_BIN2TXT, NO_CHANNELS, FULL_PATH_TO_TRACE, 
                              SAMPLE_RATE, INPUT_RANGE])
-
+            end_bin = time.clock()
             #trace = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-A.txt", dtype=float, usecols = (1))
             #gpio = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-B.txt", dtype=float, usecols = (1))
             # SPLIT
+            start_split = time.clock()
             split(FULL_PATH_TO_TRACE + "--channel-A.txt", 
                   FULL_PATH_TO_TRACE + "--channel-B.txt",
-                  SPLIT_TRACE_PATH + time_format)
+                  SPLIT_TRACE_PATH + time_format,
+                  DOWNSAMPLE_THROW)
+            end_split = time.clock()
             
+            start_load = time.clock()
             trace = np.genfromtxt(SPLIT_TRACE_PATH + time_format + '.csv', dtype=float)
+            end_load = time.clock()
             # DOWNSAMPLE
-            trace = downsample(trace, DOWNSAMPLE_DIV)
+            start_downsample = time.clock()
+            if DOWNSAMPLE_DIV:
+                trace = downsample(trace, DOWNSAMPLE_DIV)
+            end_downsample = time.clock()
             #gpio = downsample(gpio, DOWNSAMPLE_DIV)
-            print("Trace Length: ")
-            print(trace.shape)
+            print("BIN2TXT time : ", end_bin - start_bin)
+            print("SPLIT time : ", end_split - start_split)
+            print("load trace time : ", end_load - start_load)
+            print("downsample (avg) time : ", end_downsample - start_downsample)
+            print("TOTAL :", end_downsample - start_bin)
             # PLOT
             plt.plot(trace)
             #plt.plot(gpio)
             plt.show()
-            #label = classifier.classify(trace)
+            label = classifier.classify(trace)
+            print(label)
             #r.publish(LABEL_CHANNEL, label)
         time.sleep(0.001)
 

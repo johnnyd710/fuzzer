@@ -3,7 +3,8 @@
 import csv
 import sys
 
-def split(channelA, channelB, out):
+def split(channelA, channelB, out, downsample_div=1):
+    downsample_div = int(downsample_div)
     test_file = open(channelA,"rb")
     #data = test_file.readline()
 
@@ -56,6 +57,7 @@ def split(channelA, channelB, out):
     test_file = open(channelB,"rb")
 
     i=0
+    n=0
     # cut channel B
     print("Splitting signals...")
     for line in test_file:
@@ -71,7 +73,8 @@ def split(channelA, channelB, out):
                 current_csv = open(file_name, "w")
                 file_open = 1
 
-          current_csv.write("%.13f \n" % (signal))
+          if (n % downsample_div == 0):
+              current_csv.write("%.13f \n" % (signal))
 
           if time >= (end_timestamps[i]+ 0.0004):
                 internal_counter = 0
@@ -82,6 +85,7 @@ def split(channelA, channelB, out):
 
           if signal_counter >= num_signals:
                 break
+          n+=1
 
     test_file.close()
 
