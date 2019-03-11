@@ -34,8 +34,8 @@ def train():
     Offline_.load(DATA_IN)
 
     #data = to_time_series_dataset(Offline_.signals)
-    data = np.array(Offline_.signals)
-    print("Size of training data (rows, cols) = (%d, %d)" % (data.shape[0], data.shape[1]))
+    data = np.vstack(Offline_.signals)
+    print("Size of training data (rows, cols) ", data.shape)
 
     if ALGORITHM.lower() == 'kmeans':
         Detector = Kmeans(K)

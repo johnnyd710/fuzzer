@@ -17,20 +17,17 @@ from I2C import I2C_Bus as Device
 
 def main():
 
-    r = Redis(host='192.168.6.1', port=6379, db=0)
+    r = Redis(host='localhost', port=6379, db=0)
     p = r.pubsub()
     p.subscribe('Comms')
-    _ = p.get_message() # get rid of first '1'
 
     Mapper = Device()
 
     while True:
         message = p.get_message()
         if message:
-            # wait a second
-            time.sleep(0.5)
             # do something
-            Mapper.Map(message['data'].decode())
+            Mapper.Map(message['data'])
 
         time.sleep(0.01)
 
