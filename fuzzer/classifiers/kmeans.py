@@ -27,7 +27,7 @@ class Kmeans(object):
 	def load_centroids(self, path):
 		self.centroids = []
 		for centroid in os.listdir(path):
-			self.centroids.append(np.loadtxt(path+'/'+centroid, delimiter=','))
+			self.centroids.append(np.load(path+'/'+centroid))
 		print("Loaded centroids from %s" % path)
 		self.assignments = list(range(len(self.centroids)))
 
@@ -35,7 +35,7 @@ class Kmeans(object):
 		if self.createFolder(path):
 			i=0
 			for centroid in self.centroids:
-				np.savetxt(path + '/' + str(i), centroid, delimiter=',')
+				np.save(path + '/' + str(i), centroid)
 				i+=1
 			print("Saved centroids to %s" % path)	
 

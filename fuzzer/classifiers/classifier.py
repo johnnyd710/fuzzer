@@ -12,12 +12,28 @@ import time
 from redis import Redis
 from kmeans import Kmeans
 import numpy as np
+import matplotlib.animation as animation
+import matplotlib.pyplot as plt
 
 PATH_TO_CENTROIDS = "../out/centroids-old"
 LABEL_CHANNEL = "label"
 TRACE_CHANNEL = "trace"
 REDIS_HOST = "192.168.6.1"
 NO_CLUSTERS = 5
+
+
+def animate(i, p, classifier):
+    message = p.get_message()
+    if message:
+        trace = np.fromstring(message['data'])
+        label = classifier.classify(trace)
+        # r.publish(LABEL_CHANNEL, label)
+        ax.clear()
+        ax.plot(trace)
+        plt.ylabel("Power Consumption")
+        plt.xlabel("Time Units")
+        plt.title("Signal, cluster = " + str(label))
+
 
 def main():
 
@@ -31,14 +47,11 @@ def main():
     # load in the offline model
     classifier.load_centroids(PATH_TO_CENTROIDS)
 
-    while True:
-        message = p.get_message()
-        if message:
-            trace = np.fromstring(message['data'])
-            label = classifier.classify(trace)
-            print("LABEL is: ", label)
-            #r.publish(LABEL_CHANNEL, label)
-        time.sleep(0.001)
+    fig = plt.figure()
+    ax = fig.add_subplot(1, 1, 1)
+
+    ani = animation.FuncAnimation(fig, animate, fargs=(p, classifier), interval=500)
+    plt.show()
 
     p.close()
     exit()

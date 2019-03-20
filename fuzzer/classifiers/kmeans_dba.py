@@ -7,11 +7,11 @@ changes:
 - added save & load centroids method
 '''
 
+from __future__ import division
 import matplotlib.pylab as plt
 import numpy as np
 from progress.bar import Bar
 import os
-from __future__ import division
 import numpy as np
 import matplotlib.pyplot as plt
 from functools import reduce

@@ -11,9 +11,6 @@ out: centroids of kmeans centroids.txt
 
 '''
 
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
-
 from classifiers.kmeans import Kmeans
 from classifiers.kmeans_dba import KmeansDBA
 from offline import Offline
@@ -24,17 +21,33 @@ K=5 # no. of clusters
 DATA_IN="out/traces" # location of training dataset
 CENTROIDS_OUT="out/centroids" # location to put centroids after training
 ALGORITHM="kmeans" # kmeans or dba?
-def main():
-    train()
+
+
+def pad(s, m, fillval=0.0):
+    """ pads with zeros so they are all equal length """
+    lens = np.array([len(item) for item in s])
+    mask = lens[:, None] > np.arange(lens.max())
+    out = np.full(mask.shape, fillval)
+    out[mask] = np.concatenate(s)
+    return out
+
+
+def load(path):
+    max_length = 0
+    signals = []
+    for filename in os.listdir(path):
+        filename = path + '/' + filename
+        signals.append(np.load(filename))
+    signals = pad(signals, max_length)
+    print("%d signals loaded from %s" % (len(signals), path)) 
+    return signals
+
 
 def train():
-    # initialize
-    Offline_ = Offline()
 
-    Offline_.load(DATA_IN)
+    data = load(DATA_IN)
 
-    #data = to_time_series_dataset(Offline_.signals)
-    data = np.vstack(Offline_.signals)
+    data = np.vstack(data)
     print("Size of training data (rows, cols) ", data.shape)
 
     if ALGORITHM.lower() == 'kmeans':
@@ -49,5 +62,5 @@ def train():
     Detector.save_centroids(CENTROIDS_OUT)
 
 if __name__ == "__main__":
-    main()
+    train()
     exit()

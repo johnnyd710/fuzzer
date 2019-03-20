@@ -32,9 +32,10 @@ INPUT_RANGE = "400mV"
 DOWNSAMPLE_DIV = False
 DOWNSAMPLE_THROW = 50
 PATH_TO_BIN2TXT = "../../scripts/bin2txt"
-NO_CHANNELS="2"
+NO_CHANNELS = "2"
 SPLIT_TRACE_PATH = "../out/traces/trace-"
 BUFFER_SIZE = 2048000
+
 
 def main():
 
@@ -51,9 +52,9 @@ def main():
             now = datetime.now()
             start_capture = time.time()
             p1 = subprocess.Popen([PATH_TO_CAPTURE_SCRIPT, SAMPLE_RATE, 
-                             INPUT_RANGE,
-                             CAPTURE_LENGTH, 
-                             POWERTRACE_LOG, NO_CHANNELS])
+                                   INPUT_RANGE,
+                                   CAPTURE_LENGTH, 
+                                   POWERTRACE_LOG, NO_CHANNELS])
             p1.wait()
             end_capture = time.time()
             time_format = now.strftime("%Y-%m-%d-%H%M")
@@ -84,7 +85,7 @@ def main():
             end_split = time.time()
             
             start_load = time.time()
-            trace = np.genfromtxt(SPLIT_TRACE_PATH + time_format + '.csv', dtype=float)
+            trace = np.load(SPLIT_TRACE_PATH + time_format + '.npy', dtype=float)
             end_load = time.time()
             # DOWNSAMPLE
             start_downsample = time.time()
