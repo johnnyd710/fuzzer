@@ -14,10 +14,13 @@ import time
 from I2C import I2C_Bus as Device
 # from test import Mapper_Test as Device
 
+HOST= '192.168.6.1'
+PORT=6379
+
 
 def main():
 
-    r = Redis(host='localhost', port=6379, db=0)
+    r = Redis(host=HOST, port=PORT, db=0)
     p = r.pubsub()
     p.subscribe('Comms')
 
@@ -25,9 +28,11 @@ def main():
 
     while True:
         message = p.get_message()
-        if message:
+        if message and message['data'] != 1:
             # do something
-            Mapper.Map(message['data'])
+            time.sleep(0.3)
+            Mapper.Map(message['data'].decode())
+            print('Message %s Sent' % message['data'].decode())
 
         time.sleep(0.01)
 
