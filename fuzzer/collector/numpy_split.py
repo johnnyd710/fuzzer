@@ -5,7 +5,7 @@ import sys
 import numpy as np
 
 
-def np_split(channelA, channelB, out, downsample_div=1):
+def split(channelA, channelB, out, downsample_div=1):
     downsample_div = int(downsample_div)
 
     counter = 1
@@ -24,7 +24,6 @@ def np_split(channelA, channelB, out, downsample_div=1):
     # detect start and end instead for channel A
     print("Detecting signals starting points...")
     for signal in channelA:
-
         if signal <= -200:
             up = 1
 
@@ -51,8 +50,12 @@ def np_split(channelA, channelB, out, downsample_div=1):
     num_signals = len(indices)
     print("No. of signals:", num_signals)
 
+    if num_signals < 1:
+        return num_signals
+
     for idx, start in enumerate(indices):
-        file_name = out + '-' + str(idx) + ".npy"
+        file_name = out + '-' + str(idx+1) + ".npy"
         arr = channelB[start:end_indices[idx]]
         # keep every (downsample_div)th value
         np.save(file_name, arr[::downsample_div])
+    return num_signals

@@ -16,7 +16,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from datetime import datetime
 from downsample import downsample
-from split import split
+from numpy_split import split
 
 PATH_TO_CENTROIDS = "../out/centroids-old"
 PATH_TO_CAPTURE_SCRIPT = "../../scripts/acquire_to_disk"
@@ -24,7 +24,7 @@ PATH_TO_TRACE = "/Digitizer/captured-data/"
 LABEL_CHANNEL = "label"
 COMMS_CHANNEL = "Comms"
 TRACE_CHANNEL = "trace"
-REDIS_HOST = "192.168.6.1"
+REDIS_HOST = "127.0.0.1"
 POWERTRACE_LOG = "I2C_TEST"
 CAPTURE_LENGTH = "1"
 SAMPLE_RATE = "10"
@@ -78,19 +78,24 @@ def main():
             # SPLIT
             time_format = now.strftime("%Y-%m-%d-%H%M%S")
             start_split = time.time()
-            split(powertrace, 
+            no_signals = split(powertrace, 
                   gpio,
                   SPLIT_TRACE_PATH + time_format,
                   DOWNSAMPLE_THROW)
             end_split = time.time()
-            
+            if no_signals == 0:
+                print("No signal detected ... skipping message.\n")
+                continue
             start_load = time.time()
-            trace = np.load(SPLIT_TRACE_PATH + time_format + '.npy', dtype=float)
+            traces = []
+            for signal in range(1, no_signals+1):
+                traces.append(np.load(SPLIT_TRACE_PATH + time_format + '-' + str(signal) + '.npy'))
             end_load = time.time()
             # DOWNSAMPLE
             start_downsample = time.time()
             if DOWNSAMPLE_DIV:
-                trace = downsample(trace, DOWNSAMPLE_DIV)
+                for trace in traces:
+                    trace = downsample(trace, DOWNSAMPLE_DIV)
             end_downsample = time.time()
             #gpio = downsample(gpio, DOWNSAMPLE_DIV)
             print("capture time: ", end_capture - start_capture)
@@ -100,10 +105,10 @@ def main():
             print("downsample (avg) time : ", end_downsample - start_downsample)
             print("TOTAL :", end_downsample - start_bin)
             # PLOT
-            plt.plot(trace)
             #plt.plot(gpio)
-            plt.show()
-            r.publish(TRACE_CHANNEL, trace.tostring())
+            for trace in traces:
+                r.publish(TRACE_CHANNEL, trace.tostring())
+                time.sleep(0.3)
         time.sleep(0.001)
 
     p.close()

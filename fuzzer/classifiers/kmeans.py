@@ -27,7 +27,7 @@ class Kmeans(object):
 	def load_centroids(self, path):
 		self.centroids = []
 		for centroid in os.listdir(path):
-			self.centroids.append(np.load(path+'/'+centroid))
+			self.centroids.append(np.loadtxt(path+'/'+centroid, delimiter=','))
 		print("Loaded centroids from %s" % path)
 		self.assignments = list(range(len(self.centroids)))
 
@@ -35,7 +35,7 @@ class Kmeans(object):
 		if self.createFolder(path):
 			i=0
 			for centroid in self.centroids:
-				np.save(path + '/' + str(i), centroid)
+				np.savetxt(path + '/' + str(i), centroid, delimiter=',')
 				i+=1
 			print("Saved centroids to %s" % path)	
 
@@ -89,10 +89,10 @@ class Kmeans(object):
 	def classify(self, response):
 		""" calculate dist to each clust, return closest """
 		dist = {key:None for key in self.assignments}
-
+		response = self.pad(response, len(self.centroids[0]))
 		for key in self.assignments:
 			dist[key] = self.DTWDistance(response, self.centroids[key])
-
+		print(dist)
 		return min(dist, key=dist.get)
 
 	def get_centroids(self):
@@ -158,4 +158,10 @@ class Kmeans(object):
 				LB_sum=LB_sum+(i-lower_bound)**2
 		
 		return np.sqrt(LB_sum)
+
+	def pad(self, s, l):
+		""" pads with zeros so they are all equal length """
+		arr = np.zeros(l)
+		arr[:len(s)] = s
+		return arr
 	

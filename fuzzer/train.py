@@ -17,10 +17,10 @@ from offline import Offline
 import numpy as np
 import os
 
-K=5 # no. of clusters
+K=10 # no. of clusters
 DATA_IN="out/traces" # location of training dataset
-CENTROIDS_OUT="out/centroids" # location to put centroids after training
-ALGORITHM="kmeans" # kmeans or dba?
+CENTROIDS_OUT="out/dba-centroids" # location to put centroids after training
+ALGORITHM="dba" # kmeans or dba?
 
 
 def pad(s, m, fillval=0.0):

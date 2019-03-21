@@ -1,23 +1,23 @@
 #!/usr/bin/python3.5
 import matplotlib.pyplot as plt
 import os
-import click
 import numpy as np
+import sys
 
-@click.command()
-@click.option('--path', '-p', help='path to directory.')
-def main(path):
-    centroids
+PATH=sys.argv[1]
 
-def centroids(path):
+def centroids():
+    i=0
+    for centroid in os.listdir(PATH):
+        i+=1
+        y = np.loadtxt(PATH + '/' + centroid)
+        plt.plot(y, label=str(i))
 
-    for centroid in os.listdir(path):
-        y = np.loadtxt(path + '/' + centroid)
-        plt.plot(y)
-
+    plt.legend()
     plt.show()
 
 
+
 if __name__ == "__main__":
-    main()
+    centroids()
     exit()

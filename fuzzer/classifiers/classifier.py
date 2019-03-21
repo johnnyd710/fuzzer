@@ -15,25 +15,33 @@ import numpy as np
 import matplotlib.animation as animation
 import matplotlib.pyplot as plt
 
-PATH_TO_CENTROIDS = "../out/centroids-old"
+PATH_TO_CENTROIDS = "../out/kmeans-centroids"
 LABEL_CHANNEL = "label"
 TRACE_CHANNEL = "trace"
-REDIS_HOST = "192.168.6.1"
-NO_CLUSTERS = 5
+REDIS_HOST = "127.0.0.1"
+NO_CLUSTERS = 10
 
+
+fig = plt.figure()
+ax = fig.add_subplot(1, 1, 1)
+plt.xlabel("Time Units")
+plt.ylabel("Power Consumption")
+
+idx = 0
 
 def animate(i, p, classifier):
     message = p.get_message()
-    if message:
+    if message and (message['data'] != 1):
+        global idx
+        idx += 1
         trace = np.fromstring(message['data'])
+        if idx % 5 == 0:
+            ax.clear()
         label = classifier.classify(trace)
         # r.publish(LABEL_CHANNEL, label)
-        ax.clear()
-        ax.plot(trace)
-        plt.ylabel("Power Consumption")
-        plt.xlabel("Time Units")
-        plt.title("Signal, cluster = " + str(label))
-
+        ax.plot(trace, label = str(idx))
+        ax.legend()
+        plt.title("Signal, cluster = " + str(label+1))
 
 def main():
 
@@ -46,9 +54,6 @@ def main():
     classifier = Kmeans(NO_CLUSTERS)
     # load in the offline model
     classifier.load_centroids(PATH_TO_CENTROIDS)
-
-    fig = plt.figure()
-    ax = fig.add_subplot(1, 1, 1)
 
     ani = animation.FuncAnimation(fig, animate, fargs=(p, classifier), interval=500)
     plt.show()
