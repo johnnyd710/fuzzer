@@ -116,6 +116,29 @@ Given the input alphabet of a black box system, reverse engineer the FSM represe
     %and classifying the response of the system to the output alphabet understood by the Learner.
 \end{enumerate}
 
+
+\section*{Questions (and Answers) for Paper}
+\begin{enumerate}
+    \item \textbf{WHEN TALKING ABOUT CLUSTERING USE DEFINITION FROM INTRO TO STAT LEARNING BOOK}
+    \item framework for using powertrace for protocol fuzzing / model learning.
+    \item can signals be the same size? pad with zeros
+    \item dba averaging is effective but what is the computational complexity? is it worth it? or dtw alone.
+    \item can this work for model learning with embedded systems (I2C?)
+    \item can this work for protocol fuzzing? (web server?)
+    \item how does it compare to normal model learning? well, sometimes outputs aren't possible or can be duped.
+    \item downsample: at what sampling frequency does it still work ? show plot with time? what method did you use (averaging).
+    \item how does training work? is it online (batch training, record all traces and retrain every once in a while)
+    \item metrics for k means (parameters w, iterations)
+    \item how did you set up circuit (circuit diagram)
+    \item clustering metrics (when do you stop? which metrics did you choose?)
+    \item how is it better or similar to (https://arxiv.org/abs/1806.00981) Automatic Clustering of a Network Protocol with Weakly-Supervised Clustering
+    \item how did you train sequences of different lengths? padding? why? during classifying is it ignored? why is that okay? see http://alumni.cs.ucr.edu/~ratana/RatanamC.pdf, where they say diff lengths is ok for DTW
+    \item how many clusters? how did you choose k? (too many better than not enough? show plot with k)
+    \item what is the KB lower bound, what did you remove for DBA? different lengths sequences not allowed for KB so i had to remove it.
+    \item Dont forget to cite the DBA guys and the code for Dtw
+
+\end{enumerate}
+
 \nocite*{}
 \bibliography{bibfile}{}
 \bibliographystyle{plain}

@@ -55,8 +55,8 @@ class KmeansDBA(object):
 		k-means clustering algorithm for time series data.  dynamic time warping Euclidean distance
 			used as default similarity measure. 
 		'''
-		idx= np.random.choice(len(data), self.num_clust)
-		self.centroids= [data[i] for i in idx]
+		idx= np.random.choice(data.shape[0], self.num_clust)
+		self.centroids= data[idx]
 
 		for n in range(num_iter):
 			print("Iteration: ", str(n))
@@ -66,10 +66,11 @@ class KmeansDBA(object):
 				min_dist=float('inf')
 				closest_clust=None
 				for c_ind,j in enumerate(self.centroids):
-					cur_dist=self.DTWDistance(i,j,w)
-					if cur_dist<min_dist:
-						min_dist=cur_dist
-						closest_clust=c_ind
+					if self.LB_Keogh(i,j,5) < min_dist:
+						cur_dist=self.DTWDistance(i,j,w)
+						if cur_dist<min_dist:
+							min_dist=cur_dist
+							closest_clust=c_ind
 				if closest_clust in self.assignments:
 					self.assignments[closest_clust].append(ind)
 				else:
@@ -78,7 +79,7 @@ class KmeansDBA(object):
 			#recalculate centroids of clusters using DBA, only take a sample (otherwise too expensive)
 			for key in self.assignments:				
 				#series = data[np.random.choice(self.assignments[key], dba_sample)]
-				series = [data[i] for i in self.assignments[key]]
+				series = data[self.assignments[key]]
 				if len(series) != 0:
 					self.centroids[key] = self.performDBA(series)
 				else:

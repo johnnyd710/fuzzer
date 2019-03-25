@@ -1,17 +1,17 @@
 # Fdb version 3
-["bibtex proposal"] 1549679309 "proposal.aux" "proposal.bbl" "proposal" 1549679309
+["bibtex proposal"] 1551724894 "proposal.aux" "proposal.bbl" "proposal" 1553293710
   "/usr/share/texlive/texmf-dist/bibtex/bst/base/plain.bst" 1292289607 20613 bd3fbfa9f64872b81ac57a0dd2ed855f ""
   "bibfile.bib" 1549678596 2455 37c8b4df41410b6bb9501786b7ad852f ""
-  "proposal.aux" 1549679309 1068 45786bd62f861ed713f5a8820bf94d0c ""
+  "proposal.aux" 1553293710 1152 99461061c489e87bcba4e4a199b62850 ""
   "proposal.bcf" 0 -1 0 ""
   (generated)
-  "proposal.blg"
   "proposal.bbl"
-["pdflatex"] 1549679309 "/home/johnny/code/fuzzer/Documents/Proposal/proposal.tex" "/home/johnny/code/fuzzer/Documents/Proposal/proposal.pdf" "proposal" 1549679309
+  "proposal.blg"
+["pdflatex"] 1553293710 "/home/johnny/code/fuzzer/Documents/Proposal/proposal.tex" "/home/johnny/code/fuzzer/Documents/Proposal/proposal.pdf" "proposal" 1553293710
   "../figs/state-detector.png" 1547854217 17776 395e12fc6048faa2ce16882410159433 ""
   "/etc/texmf/web2c/texmf.cnf" 1535990757 475 c0e671620eb5563b2130f56340a5fde8 ""
-  "/home/johnny/code/fuzzer/Documents/Proposal/proposal.aux" 1549679309 1068 45786bd62f861ed713f5a8820bf94d0c ""
-  "/home/johnny/code/fuzzer/Documents/Proposal/proposal.tex" 1549679309 5695 a3071b40da768dddc7ac191f7e9786db ""
+  "/home/johnny/code/fuzzer/Documents/Proposal/proposal.aux" 1553293710 1152 99461061c489e87bcba4e4a199b62850 ""
+  "/home/johnny/code/fuzzer/Documents/Proposal/proposal.tex" 1553293710 8057 fbb08a7e6311bc38fa34cf859bdadfcb ""
   "/usr/share/texlive/texmf-dist/fonts/map/fontname/texfonts.map" 1272929888 3287 e6b82fe08f5336d4d5ebc73fb1152e87 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm" 1136768653 1328 c834bbb027764024c09d3d2bf908b5f0 ""
   "/usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm" 1136768653 1324 c910af8c371558dc20f2d7822f66fe64 ""
@@ -64,15 +64,15 @@
   "/usr/share/texlive/texmf-dist/web2c/texmf.cnf" 1503343927 31343 93828589fb0cea665e553ee5a17ad2d4 ""
   "/usr/share/texmf/web2c/texmf.cnf" 1503343927 31343 93828589fb0cea665e553ee5a17ad2d4 ""
   "/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map" 1537900874 1481705 c100063c5bd21034b79de01e1adf0321 ""
-  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1537900878 718487 a6c84db08aa9494381a071edc6947530 ""
-  "proposal.aux" 1549679309 1068 45786bd62f861ed713f5a8820bf94d0c ""
-  "proposal.bbl" 1549679309 1633 3f980110fdb8c75c1b21973dec9b4639 "bibtex proposal"
-  "proposal.out" 1549679309 0 d41d8cd98f00b204e9800998ecf8427e ""
-  "proposal.tex" 1549679309 5695 a3071b40da768dddc7ac191f7e9786db ""
+  "/var/lib/texmf/web2c/pdftex/pdflatex.fmt" 1549910313 718487 07433c7bed250562a4f3e9d78103de0e ""
+  "proposal.aux" 1553293710 1152 99461061c489e87bcba4e4a199b62850 ""
+  "proposal.bbl" 1551724894 1633 3f980110fdb8c75c1b21973dec9b4639 "bibtex proposal"
+  "proposal.out" 1553293710 46 d1c845c35234cbd6322b6267c60eba03 ""
+  "proposal.tex" 1553293710 8057 fbb08a7e6311bc38fa34cf859bdadfcb ""
   (generated)
-  "/home/johnny/code/fuzzer/Documents/Proposal/proposal.pdf"
-  "proposal.pdf"
-  "proposal.aux"
   "proposal.log"
+  "/home/johnny/code/fuzzer/Documents/Proposal/proposal.pdf"
   "proposal.out"
   "/home/johnny/code/fuzzer/Documents/Proposal/proposal.log"
+  "proposal.pdf"
+  "proposal.aux"

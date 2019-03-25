@@ -71,10 +71,10 @@ INPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
 INPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
 INPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
 INPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
+OUTPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.pdf
 INPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
 INPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
 OUTPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.out
-OUTPUT /home/johnny/code/fuzzer/Documents/Proposal/proposal.pdf
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx10.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
 INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmbx12.tfm

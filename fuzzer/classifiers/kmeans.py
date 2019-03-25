@@ -48,7 +48,7 @@ class Kmeans(object):
 			print('Error: Creating directory. ' +  directory)
 			return 0	
 
-	def k_means_clust(self,data,num_iter,w,progress=False):
+	def k_means_clust(self,data,num_iter,w):
 		'''
 		k-means clustering algorithm for time series data.  dynamic time warping Euclidean distance
 			used as default similarity measure. 
@@ -57,8 +57,6 @@ class Kmeans(object):
 		self.centroids= data[idx]
 
 		for n in range(num_iter):
-			if progress:
-				print('iteration '+str(n+1))
 			#assign data points to clusters
 			self.assignments={}
 			for ind,i in enumerate(data):
