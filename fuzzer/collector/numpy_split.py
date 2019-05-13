@@ -23,11 +23,11 @@ def split(channelA, channelB, out, downsample_div=1):
     # goes through file, detects starting positions
     # detect start and end instead for channel A
     print("Detecting signals starting points...")
-    for signal in channelA:
-        if signal <= -200:
+    for signal in channelB:
+        if signal > 200:
             up = 1
 
-        if signal > -200 and up and signal_detected == 0:
+        if signal <= 200 and up and signal_detected == 0:
             up = 0
             pulse_counter += 1
             if pulse_counter == 1:
@@ -55,7 +55,7 @@ def split(channelA, channelB, out, downsample_div=1):
 
     for idx, start in enumerate(indices):
         file_name = out + '-' + str(idx+1) + ".npy"
-        arr = channelB[start:end_indices[idx]]
+        arr = channelA[start:end_indices[idx]]
         # keep every (downsample_div)th value
         np.save(file_name, arr[::downsample_div])
     return num_signals

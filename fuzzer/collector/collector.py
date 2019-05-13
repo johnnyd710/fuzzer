@@ -26,16 +26,15 @@ COMMS_CHANNEL = "Comms"
 TRACE_CHANNEL = "trace"
 REDIS_HOST = "127.0.0.1"
 POWERTRACE_LOG = "I2C_TEST"
-CAPTURE_LENGTH = "1"
+CAPTURE_LENGTH = "3"
 SAMPLE_RATE = "10"
 INPUT_RANGE = "400mV"
-DOWNSAMPLE_DIV = False
+DOWNSAMPLE_DIV = 50
 DOWNSAMPLE_THROW = 50
 PATH_TO_BIN2TXT = "../../scripts/bin2txt"
 NO_CHANNELS = "2"
 SPLIT_TRACE_PATH = "../out/traces/trace-"
 BUFFER_SIZE = 2048000
-
 
 def main():
 
@@ -46,7 +45,7 @@ def main():
 
     while True:
         message = p.get_message()
-        if message:
+        if message and message['data'] != 1:
             print(message['data'])
             # execute capture script
             now = datetime.now()
@@ -70,21 +69,23 @@ def main():
             data = np.fromfile(FULL_PATH_TO_TRACE, dtype='uint16')
             data = (data - 32768.0)*400 / 32768
             arrays = np.split(data, data.shape[0] // BUFFER_SIZE)
-            powertrace = np.concatenate(arrays[0::2])
-            gpio = np.concatenate(arrays[1::2])
+            channelA = np.concatenate(arrays[0::2])
+            channelB = np.concatenate(arrays[1::2])
             end_bin = time.time()
             #trace = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-A.txt", dtype=float, usecols = (1))
             #gpio = np.genfromtxt(FULL_PATH_TO_TRACE + "--channel-B.txt", dtype=float, usecols = (1))
             # SPLIT
             time_format = now.strftime("%Y-%m-%d-%H%M%S")
             start_split = time.time()
-            no_signals = split(powertrace, 
-                  gpio,
+            no_signals = split(channelA, 
+                  channelB,
                   SPLIT_TRACE_PATH + time_format,
                   DOWNSAMPLE_THROW)
             end_split = time.time()
             if no_signals == 0:
                 print("No signal detected ... skipping message.\n")
+                plt.plot(channelB)
+                plt.show()
                 continue
             start_load = time.time()
             traces = []
@@ -93,7 +94,7 @@ def main():
             end_load = time.time()
             # DOWNSAMPLE
             start_downsample = time.time()
-            if DOWNSAMPLE_DIV:
+            if False:
                 for trace in traces:
                     trace = downsample(trace, DOWNSAMPLE_DIV)
             end_downsample = time.time()

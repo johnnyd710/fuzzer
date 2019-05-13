@@ -1,0 +1,42 @@
+    1  cd /home/alazartech/
+    2  ls -l
+    3  cd Digitizer-capture-and-format-conversions/
+    4  ls -l
+    5  logout
+    6  exit
+    7  date
+    8  ls
+    9  nano acquire_to_disk
+   10  cat mcb1700-powertrace-cantrace-setup-shailja-
+   11  head mcb1700-powertrace-cantrace-setup-shailja-
+   12  nano mcb1700-powertrace-cantrace-setup-shailja-
+   13  nano mcb1700-powertrace-cantrace-setup-shailja-canlib.sh 
+   14  ls -la
+   15  ./powertrace.sh 
+   16  ./bin2txt 2018-07-19-1613--10MSPS--400mV--I2C_Powertrace_1_sample 
+   17  ./bin2txt 2018-07-19-1613--10MSPS--400mV--I2C_Powertrace_1_sample 1 10 400
+   18  ./bin2txt 1 2018-07-19-1613--10MSPS--400mV--I2C_Powertrace_1_sample 10 400
+   19  ./bin2txt 1 2018-07-19-1613--10MSPS--400mV--I2C_Powertrace_1_sample 10 400mv
+   20  ./bin2txt 1 2018-07-19-1613--10MSPS--400mV--I2C_Powertrace_1_sample 10 400mV
+   21  ./powertrace.sh 
+   22  ./bin2txt 1 2018-07-19-1627--10MSPS--400mV--I2C_Powertrace_1_sample 10 400mV
+   23  ./powertrace.sh 
+   24  ./bin2txt 1 2018-07-19-1644--10MSPS--400mV--I2C_Powertrace_1_sample 10 400mV
+   25  ./bin2txt 1 2018-07-19-1646--10MSPS--400mV--I2C_Powertrace_2_sample 10 400mV
+   26  ./bin2txt 1 2018-07-19-1647--10MSPS--400mV--I2C_Powertrace_1_sample_real 10 400mV
+   27  cd /media/aaflores/MYLINUXLIVE/
+   28  ls
+   29  sha256sum 2018-07-19-1644--10MSPS--400mV--I2C_Powertrace_1_sample.txt 
+   30  sha256sum 2018-07-19-1646--10MSPS--400mV--I2C_Powertrace_2_sample.txt 
+   31  sha256sum 2018-07-19-1647--10MSPS--400mV--I2C_Powertrace_1_sample_real.txt 
+   32  sudo mount.cifs -o uid=$(id -u),gid=$(id -g),dir_mode=0755,file_mode=0644,cache=none,vers=1.0,domain=nexus,sec=ntlmssp,user=aaflores //ecresearch.uwaterloo.ca/esg ./ece_research
+   33  mount.cifs -o uid=$(id -u),gid=$(id -g),dir_mode=0755,file_mode=0644,cache=none,vers=1.0,domain=nexus,sec=ntlmssp,user=aaflores //ecresearch.uwaterloo.ca/esg ./ece_research
+   34  fdisk -l
+   35  cd Untitled\ Folder/
+   36  sha256sum 2018-07-19-1644--10MSPS--400mV--I2C_Powertrace_1_sample.txt 
+   37  sha256sum 2018-07-19-1646--10MSPS--400mV--I2C_Powertrace_2_sample.txt 
+   38  sha256sum 2018-07-19-1647--10MSPS--400mV--I2C_Powertrace_1_sample_real.txt 
+   39  history
+   40  pwd
+   41  ls
+   42  history > history.txt
